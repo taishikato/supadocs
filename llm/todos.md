@@ -7,10 +7,10 @@
 
 ## B. Supabase/DB（pgvector）
 - [x] **P0**: `supabase init`（ルート）→ `supabase/` 配下に配置
-- [ ] **P0**: マイグレーション作成  
+- [x] **P0**: マイグレーション作成  
   - `document_chunks(id, doc_path, chunk_index, content, embedding, content_hash, updated_at)`
   - HNSWインデックス作成（`vector_cosine_ops`）
-- [ ] **P1**: RPC `match_document_chunks(query_embedding, match_count, similarity_threshold)`
+- [x] **P1**: RPC `match_document_chunks(query_embedding, match_count, similarity_threshold)`
 
 ## C. Edge Function（reindex）＋ CI
 - [ ] **P0**: Edge Function `reindex` 雛形  
