@@ -93,3 +93,4 @@ Supadocs は pnpm/TurboRepo ベースのモノレポに移行しました。本�
 ## Do
 - 常に日本語で応答すること。
 - Supabase SDKを使用する際、`.eq`の代わりに`.match`を使用すること。
+- プロダクト内の文章は英語で

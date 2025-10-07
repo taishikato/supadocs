@@ -5,22 +5,22 @@ repo-root/
 ├─ apps/
 │  └─ web/                          # Next.js (App Router)
 │     ├─ app/
-│     │  ├─ docs/                   # Markdown/MDXドキュメント
 │     │  ├─ api/
-│     │  │  ├─ chat/route.ts        # RAG回答API
-│     │  │  └─ health/route.ts      # ヘルスチェック
+│     │  │  └─ chat/route.ts        # RAG回答API（OpenAI + Supabase）
+│     │  ├─ chat/page.tsx           # チャットUI
+│     │  ├─ docs/
+│     │  │  ├─ page.tsx             # ドキュメント一覧
+│     │  │  └─ [...slug]/page.tsx   # MDXドキュメント表示
 │     │  ├─ layout.tsx
-│     │  └─ page.tsx
+│     │  └─ page.tsx                # Hero + CTA
 │     ├─ components/
-│     │  ├─ chat/                   # ChatPanel, Message 等
-│     │  └─ mdx/                    # MDXRenderer 等
+│     │  ├─ chat/chat-panel.tsx     # チャット画面（クライアント）
+│     │  └─ providers.tsx           # Theme Provider
+│     ├─ content/docs/              # Markdown/MDXドキュメント原稿
 │     ├─ lib/
-│     │  ├─ supabase.ts             # browser/server client
-│     │  ├─ rag.ts                  # 検索→RAG組み立て
-│     │  ├─ chunk.ts                # チャンク分割・正規化
-│     │  └─ env.ts                  # 環境変数バリデーション
-│     ├─ styles/
-│     │  └─ globals.css
+│     │  ├─ docs.ts                 # MDXローダー
+│     │  ├─ env.ts                  # 環境変数バリデーション
+│     │  └─ supabase.ts             # サーバー用 Supabase client
 │     ├─ next.config.mjs
 │     ├─ tailwind.config.ts
 │     ├─ postcss.config.mjs
