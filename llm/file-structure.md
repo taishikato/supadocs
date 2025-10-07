@@ -29,7 +29,7 @@ repo-root/
 ├─ packages/
 │  ├─ core/                         # 共有ロジック（チャンク/埋め込み等）
 │  │  └─ src/                       # Deno/Node両対応を意識
-│  ├─ ui/                           # 共通UI（必要になったら抽出）
+│  ├─ ui/                           # 共通UI（Shadcn UI）
 │  │  └─ src/
 │  ├─ eslint-config/                # 共通ESLint
 │  └─ typescript-config/            # 共通TSConfig

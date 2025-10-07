@@ -1,0 +1,24 @@
+{
+  "name": "@workspace/core",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.9",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "typescript": "^5.9.2"
+  },
+  "exports": {
+    "./chunk": "./src/chunk.ts",
+    "./embeddings": "./src/embeddings.ts",
+    "./utils": "./src/utils.ts",
+    "./*": "./src/*.ts"
+  }
+}

@@ -22,8 +22,8 @@
 - [ ] **P1**: 手動実行（`workflow_dispatch`）や nightly 全量再インデックス
 
 ## D. Embedding/LLM 連携
-- [ ] **P0**: 埋め込み生成ユーティリティ（Supabase AI or OpenAI）  
-- [ ] **P0**: チャンク戦略（段落優先、200–400 tokens 目安、ヘッダ保持）
+- [x] **P0**: 埋め込み生成ユーティリティ（Supabase AI or OpenAI）  
+- [x] **P0**: チャンク戦略（段落優先、200–400 tokens 目安、ヘッダ保持）
 - [ ] **P1**: モデル切替（環境変数で埋め込み/LLMを差し替え）
 
 ## E. Webアプリ（Docs表示 + チャット）
