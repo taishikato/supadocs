@@ -13,10 +13,10 @@
 - [x] **P1**: RPC `match_document_chunks(query_embedding, match_count, similarity_threshold)`
 
 ## C. Edge Function（reindex）＋ CI
-- [ ] **P0**: Edge Function `reindex` 雛形  
+- [x] **P0**: Edge Function `reindex` 雛形  
   - 署名/シークレット検証  
   - GitHub raw からファイル取得 → チャンク → 埋め込み → upsert（`content_hash` で冪等）
-- [ ] **P0**: GitHub Actions `reindex.yml`  
+- [x] **P0**: GitHub Actions `reindex.yml`  
   - `push`/`pull_request` 発火  
   - 変更ファイル列挙 → Edge FunctionへPOST（`repoRawBaseUrl`, `changedPaths`）
 - [ ] **P1**: 手動実行（`workflow_dispatch`）や nightly 全量再インデックス

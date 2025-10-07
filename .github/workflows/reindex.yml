@@ -1,0 +1,124 @@
+name: Reindex Documentation
+
+on:
+  push:
+    paths:
+      - "**/*.md"
+      - "**/*.mdx"
+      - ".github/workflows/reindex.yml"
+      - "supabase/functions/reindex/**"
+  pull_request:
+    paths:
+      - "**/*.md"
+      - "**/*.mdx"
+      - ".github/workflows/reindex.yml"
+      - "supabase/functions/reindex/**"
+
+jobs:
+  reindex:
+    name: Trigger Supabase Edge Function
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect changed Markdown files
+        id: changes
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            **/*.md
+            **/*.mdx
+
+      - name: Compute raw base URL
+        id: meta
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            REF="${{ github.event.pull_request.head.sha }}"
+          else
+            REF="${{ github.sha }}"
+          fi
+          echo "base_url=https://raw.githubusercontent.com/${{ github.repository }}/$REF/" >> "$GITHUB_OUTPUT"
+
+      - name: Skip when no docs changed
+        if: steps.changes.outputs.any_changed != 'true'
+        run: echo "No Markdown changes detected; skipping reindex call."
+
+      - name: Call reindex Edge Function
+        if: steps.changes.outputs.any_changed == 'true'
+        env:
+          EDGE_FUNCTION_URL: ${{ secrets.SUPABASE_REINDEX_FUNCTION_URL }}
+          EDGE_FUNCTION_SECRET: ${{ secrets.EDGE_FUNCTION_REINDEX_SECRET }}
+          BASE_URL: ${{ steps.meta.outputs.base_url }}
+          ADDED_FILES: ${{ steps.changes.outputs.added_files }}
+          MODIFIED_FILES: ${{ steps.changes.outputs.modified_files }}
+          DELETED_FILES: ${{ steps.changes.outputs.deleted_files }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${EDGE_FUNCTION_URL:-}" ]; then
+            echo "SUPABASE_REINDEX_FUNCTION_URL secret is not configured." >&2
+            exit 1
+          fi
+
+          if [ -z "${EDGE_FUNCTION_SECRET:-}" ]; then
+            echo "EDGE_FUNCTION_REINDEX_SECRET secret is not configured." >&2
+            exit 1
+          fi
+
+          payload=$(python - <<'PYTHON'
+import json
+import os
+
+def parse_list(value: str) -> list[str]:
+    if not value:
+        return []
+    items = []
+    for entry in value.replace(",", " ").split():
+        entry = entry.strip()
+        if entry:
+            items.append(entry)
+    return items
+
+def deduplicate(items):
+    seen = set()
+    result = []
+    for item in items:
+        if item not in seen:
+            seen.add(item)
+            result.append(item)
+    return result
+
+added = parse_list(os.environ.get("ADDED_FILES", ""))
+modified = parse_list(os.environ.get("MODIFIED_FILES", ""))
+deleted = parse_list(os.environ.get("DELETED_FILES", ""))
+
+changed = deduplicate(added + modified)
+deleted = deduplicate(deleted)
+
+payload = {
+    "repoRawBaseUrl": os.environ["BASE_URL"],
+    "changedPaths": changed,
+    "deletedPaths": deleted,
+}
+
+print(json.dumps(payload))
+PYTHON
+)
+
+          tmp_response=$(mktemp)
+          status_code=$(curl -sS \
+            -o "$tmp_response" \
+            -w "%{http_code}" \
+            -X POST "$EDGE_FUNCTION_URL" \
+            -H "Content-Type: application/json" \
+            -H "x-edge-secret: $EDGE_FUNCTION_SECRET" \
+            -d "$payload")
+
+          echo "Edge function responded with status $status_code"
+          cat "$tmp_response"
+
+          if [ "$status_code" -ge 400 ]; then
+            exit 1
+          fi
