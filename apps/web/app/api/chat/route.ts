@@ -56,12 +56,15 @@ export async function POST(request: Request) {
       ? sources
         .map(
           (match, index) =>
-            `Context ${index + 1} (similarity ${(match.similarity * 100).toFixed(1)}%):\nSource: ${match.doc_path}\n${match.content.trim()}`,
+            `Context ${index + 1} (similarity ${
+              (match.similarity * 100).toFixed(1)
+            }%):\nSource: ${match.doc_path}\n${match.content.trim()}`,
         )
         .join("\n\n")
       : "No relevant context was retrieved.";
 
-    const prompt = `質問: ${question}\n\nコンテキスト:\n${context}\n\n回答は日本語で、必要に応じて箇条書きで整理してください。`;
+    const prompt =
+      `質問: ${question}\n\nコンテキスト:\n${context}\n\n回答は日本語で、必要に応じて箇条書きで整理してください。`;
 
     const chatModel = getChatModel();
     const result = await streamText({
@@ -95,7 +98,9 @@ export async function POST(request: Request) {
           console.error("/api/chat stream error", streamError);
           controller.enqueue(
             encoder.encode(
-              `event: error\ndata: ${JSON.stringify({ message: "Stream error" })}\n\n`,
+              `event: error\ndata: ${
+                JSON.stringify({ message: "Stream error" })
+              }\n\n`,
             ),
           );
         } finally {
