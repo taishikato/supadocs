@@ -13,6 +13,12 @@ on:
       - "**/*.mdx"
       - ".github/workflows/reindex.yml"
       - "supabase/functions/reindex/**"
+  workflow_dispatch:
+    inputs:
+      force_full_sync:
+        description: "Reindex all docs when triggered manually"
+        type: boolean
+        default: false
 
 jobs:
   reindex:
