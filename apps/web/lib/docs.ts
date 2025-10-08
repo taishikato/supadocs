@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -6,9 +7,10 @@ export type DocEntry = {
   title: string;
   description?: string;
   content: string;
+  frontmatter: Record<string, string>;
 };
 
-const DOCS_DIR = path.join(process.cwd(), "apps/web/content/docs");
+const DOCS_DIR = resolveDocsDir();
 
 export async function listDocSlugs(): Promise<string[][]> {
   const files = await collectFiles(DOCS_DIR);
@@ -27,15 +29,16 @@ export async function getDocBySlug(slug: string[]): Promise<DocEntry | null> {
     let title = slug[slug.length - 1] ?? "Untitled";
     let description: string | undefined;
     let content = raw;
+    let frontmatter: Record<string, string> = {};
 
     if (frontmatterMatch) {
-      const frontmatter = parseFrontmatter(frontmatterMatch[1]!);
+      frontmatter = parseFrontmatter(frontmatterMatch[1]!);
       title = frontmatter.title ?? title;
       description = frontmatter.description;
       content = raw.slice(frontmatterMatch[0]!.length);
     }
 
-    return { slug, title, description, content };
+    return { slug, title, description, content, frontmatter };
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
       return null;
@@ -81,4 +84,22 @@ function parseFrontmatter(source: string): Record<string, string> {
     result[key] = rawValue.replace(/^["']|["']$/g, "");
   }
   return result;
+}
+
+function resolveDocsDir(): string {
+  const cwd = process.cwd();
+  const candidates = [
+    path.join(cwd, "content/docs"),
+    path.join(cwd, "apps/web/content/docs"),
+  ];
+
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  throw new Error(
+    `Docs directory not found. Checked: ${candidates.join(", ")}`,
+  );
 }

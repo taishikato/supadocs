@@ -1,0 +1,47 @@
+---
+title: Reindex Architecture
+description: How markdown changes flow into pgvector embeddings
+---
+
+# Reindex Architecture
+
+The reindex Edge Function keeps Supadocs in sync with your repository so that chat answers always reflect the latest documentation.
+
+## High-Level Flow
+
+1. GitHub Actions invokes the `reindex` Edge Function whenever Markdown/MDX files change.
+2. The function downloads each file via GitHub raw URLs and splits content into paragraph-focused chunks.
+3. Embeddings are generated with the model defined in `EMBEDDING_MODEL` and stored alongside metadata.
+4. Existing chunks for the same `doc_path` are removed to keep the datastore idempotent.
+5. The new records are upserted into the `document_chunks` table, powering semantic search.
+
+## Supabase Schema
+
+The initial migration creates the following structure:
+
+```sql
+create table document_chunks (
+  id uuid primary key default gen_random_uuid(),
+  doc_path text not null,
+  chunk_index integer not null,
+  content text not null,
+  embedding vector(1536),
+  content_hash text not null,
+  metadata jsonb,
+  updated_at timestamptz default now()
+);
+```
+
+The complementary RPC `match_document_chunks` runs cosine similarity queries with configurable limits and thresholds.
+
+## Local Iteration
+
+- Set `EDGE_FUNCTION_REINDEX_SECRET` via `supabase secrets set` before deploying the function.
+- Use `supabase functions serve reindex --env-file ../.env.local` to run it locally.
+- Trigger the workflow manually by posting to the endpoint defined in `.github/workflows/reindex.yml`.
+
+## Related Guides
+
+- Review the chat flow in [Chat Pipeline](/docs/chat).
+- Follow the developer setup in [Getting Started](/docs/getting-started).
+- Understand the future agent integration in [Agent Runtime Preview](/docs/agent-runtime-preview).

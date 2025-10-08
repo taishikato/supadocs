@@ -1,0 +1,37 @@
+---
+title: Agent Runtime Preview
+description: Upcoming collector, composer, and reviewer agents roadmap
+---
+
+# Agent Runtime Preview
+
+Supadocs is evolving into an agent-driven platform where documentation tasks can be scheduled, audited, and replayed.
+
+## Agent Taxonomy
+
+- **Collector Agent** crawls the `content/` directory, extracts metadata, and refreshes embeddings.
+- **Composer Agent** turns collected context into release notes, FAQs, and changelog drafts.
+- **Reviewer Agent** validates tone, factual accuracy, and links before publishing suggestions.
+- **Router Agent** (optional) monitors confidence scores to trigger retries or escalate to human review.
+
+Each agent emits a correlation ID so executions can be traced across logs and Supabase tables.
+
+## Runtime Building Blocks
+
+1. `packages/agents-core` will expose `registerAgent`, `runTask`, and a lightweight in-memory queue.
+2. `packages/agents-tools` provides provider-agnostic wrappers for language models, embeddings, and search utilities.
+3. Telemetry and audit trails are stored in Supabase tables such as `agent_runs`, `agent_events`, and `agent_artifacts`.
+
+These modules keep the pipeline privacy-first by using `.env` secrets and disallowing calls to unapproved vendors.
+
+## Roadmap Checklist
+
+- Bootstrap the runtime scaffolding and type contracts with Vitest coverage.
+- Integrate schema sync scripts under `scripts/` to keep Supabase migrations reproducible.
+- Ship the Collector Agent as the MVP with idempotent runs and replayable timelines.
+
+## Continue Reading
+
+- Configure your environment via [Getting Started](/docs/getting-started).
+- Learn how embeddings stay up to date in [Reindex Architecture](/docs/reindex-architecture).
+- Deep dive into the chat surface in [Chat Pipeline](/docs/chat).

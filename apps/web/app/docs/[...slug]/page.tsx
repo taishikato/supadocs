@@ -1,37 +1,39 @@
-import type { Metadata } from "next"
-import Link from "next/link"
-import { notFound } from "next/navigation"
-import { MDXRemote } from "next-mdx-remote/rsc"
-import { listDocSlugs, getDocBySlug } from "@/lib/docs"
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import { Download } from "lucide-react";
+import { Button } from "@workspace/ui/components/button";
+import { listDocSlugs, getDocBySlug } from "@/lib/docs";
 
-type PageParams = { slug?: string[] }
+type PageParams = { slug?: string[] };
 
 interface PageProps {
-  params: Promise<PageParams>
+  params: Promise<PageParams>;
 }
 
 export async function generateStaticParams() {
-  const slugs = await listDocSlugs()
-  return slugs.map((slug) => ({ slug }))
+  const slugs = await listDocSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata(
-  props: PageProps,
+  props: PageProps
 ): Promise<Metadata | undefined> {
-  const params = await props.params
-  const slug = normalizeSlug(params.slug)
-  const doc = slug ? await getDocBySlug(slug) : null
-  if (!doc) return undefined
+  const params = await props.params;
+  const slug = normalizeSlug(params.slug);
+  const doc = slug ? await getDocBySlug(slug) : null;
+  if (!doc) return undefined;
 
   return {
     title: doc.title,
     description: doc.description,
-  }
+  };
 }
 
 export default async function DocPage(props: PageProps) {
-  const params = await props.params
-  const slug = normalizeSlug(params.slug)
+  const params = await props.params;
+  const slug = normalizeSlug(params.slug);
   if (!slug) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-12">
@@ -40,33 +42,50 @@ export default async function DocPage(props: PageProps) {
           ドキュメントを選択してください。
         </p>
       </div>
-    )
+    );
   }
 
-  const doc = await getDocBySlug(slug)
+  const doc = await getDocBySlug(slug);
   if (!doc) {
-    notFound()
+    notFound();
   }
+
+  const downloadHref = `/api/docs/download/${doc.slug
+    .map((segment) => encodeURIComponent(segment))
+    .join("/")}`;
 
   return (
     <article className="mx-auto max-w-3xl px-6 py-12 prose prose-neutral dark:prose-invert">
       <header className="mb-8">
-        <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
+        <Link
+          href="/"
+          className="text-sm text-muted-foreground hover:text-foreground"
+        >
           ← トップに戻る
         </Link>
         <h1 className="mt-4 text-4xl font-bold">{doc.title}</h1>
         {doc.description ? (
-          <p className="mt-2 text-lg text-muted-foreground">{doc.description}</p>
+          <p className="mt-2 text-lg text-muted-foreground">
+            {doc.description}
+          </p>
         ) : null}
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <Button variant="outline" size="sm" asChild>
+            <a href={downloadHref} download>
+              <Download className="size-4" aria-hidden="true" />
+              <span>Markdownをダウンロード</span>
+            </a>
+          </Button>
+        </div>
       </header>
       <MDXRemote source={doc.content} />
     </article>
-  )
+  );
 }
 
 function normalizeSlug(input?: string[]): string[] | null {
   if (!input || input.length === 0) {
-    return null
+    return null;
   }
-  return input.filter(Boolean)
+  return input.filter(Boolean);
 }

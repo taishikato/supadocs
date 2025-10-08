@@ -1,18 +1,40 @@
 ---
 title: Getting Started
-description: Supadocs のセットアップ手順
+description: Spin up Supadocs locally and connect the core services
 ---
 
 # Getting Started
 
-Supadocs は Next.js と Supabase をベースにした AI 対応ドキュメントテンプレートです。
+Supadocs combines a Next.js frontend with Supabase pgvector so that every documentation site ships with Retrieval-Augmented Generation (RAG).
 
-## セットアップ
+## Prerequisites
 
-1. リポジトリをクローンします。
-2. `pnpm install` を実行します。
-3. `supabase start` でローカル Supabase を起動します。
+- Node.js 20 or later
+- pnpm 10 or later
+- Supabase CLI and Docker running in the background
+- Access to an OpenAI-compatible API key for embeddings and chat
 
-## プロンプト検索
+## Installation
 
-`pnpm dev` でローカルサーバーを起動し、チャットから質問すると関連するドキュメントが引用付きで返されます。
+1. Clone the repository and install dependencies:
+   ```bash
+   pnpm install
+   ```
+2. Create `.env.local` from the template and populate the Supabase and model credentials.
+3. Start Supabase locally and apply migrations:
+   ```bash
+   supabase start
+   supabase migration up
+   ```
+4. Launch the monorepo dev servers:
+   ```bash
+   pnpm dev
+   ```
+
+The Next.js app runs on `http://localhost:3000` and renders Markdown/MDX files from `apps/web/content/docs`.
+
+## Next Steps
+
+- Learn how chat responses are composed in [Chat Pipeline](/docs/chat).
+- Review the data flow from GitHub Actions to pgvector in [Reindex Architecture](/docs/reindex-architecture).
+- Explore the product guardrails and audit events described in [Agent Runtime Preview](/docs/agent-runtime-preview).

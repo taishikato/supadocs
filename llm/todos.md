@@ -32,7 +32,7 @@
 - [x] **P0**: チャットUI（入力、履歴、引用元リンク表示）
 - [x] **P1**: Vercel AI SDK を導入し、ストリーミング応答に対応
 - [x] **P1**: `/api/chat` を AI SDK ベースにリファクタリング（トークン管理含む）
-- [ ] **P1**: Markdownエクスポート（各ページDL）
+- [x] **P1**: Markdownエクスポート（各ページDL）
 
 ## F. セキュリティ/運用
 - [ ] **P0**: Edge Function の署名検証（`x-edge-secret` or HMAC）
@@ -40,9 +40,9 @@
 - [ ] **P1**: ログ/監視（Edge/Next/Supabaseの基本的な観測手順）
 
 ## G. DX/ドキュメント
-- [ ] **P0**: `.env.example` 整備（URL/Keys、モデル名）
-- [ ] **P0**: README（セットアップ、CI、Edgeデプロイ手順）
-- [ ] **P1**: サンプルDocs（3–5ページのMDXと内部リンク）
+- [x] **P0**: `.env.example` 整備（URL/Keys、モデル名）
+- [x] **P0**: README（セットアップ、CI、Edgeデプロイ手順）
+- [x] **P1**: サンプルDocs（3–5ページのMDXと内部リンク）
 
 ## H. 完了判定（DoD）
 - [ ] **P0**: Next.jsでMDXが表示できる

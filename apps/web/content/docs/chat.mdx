@@ -1,20 +1,28 @@
 ---
-title: チャット機能の概要
-description: Supadocs のチャット機能と RAG パイプラインの流れ
+title: Chat Pipeline
+description: Understand how Supadocs assembles retrieval-augmented answers
 ---
 
-# チャット機能の概要
+# Chat Pipeline
 
-Supadocs のチャットは、ドキュメントから抽出した埋め込みを利用して回答します。
+Every conversation relies on document chunks stored in Supabase to provide grounded answers with citations.
 
-## データフロー
+## Request Flow
 
-- GitHub Actions が更新された Markdown を検知し、Edge Function に送信。
-- Edge Function が Markdown をチャンク化し、埋め込みを生成して Supabase に保存。
-- `/api/chat` は Supabase の `match_document_chunks` を呼び出して上位チャンクを取得。
-- Vercel AI SDK を通じて LLM にコンテキストを渡し、回答を生成します。
+1. The web client calls `/api/chat` with the user prompt and prior conversation.
+2. The server loads the embedding model specified by `EMBEDDING_MODEL` and generates a query vector.
+3. Supabase RPC `match_document_chunks` returns the most relevant passages from pgvector.
+4. A chat model defined by `OPENAI_CHAT_MODEL` receives the prompt, retrieved context, and system guardrails.
+5. The streaming response is piped back to the UI via the Vercel AI SDK.
 
-## カスタマイズ
+## Configuration
 
-- 埋め込みモデルの変更は `.env` の `EMBEDDING_MODEL` で制御できます。
-- チャットモデルは `OPENAI_CHAT_MODEL` を変更すると切り替え可能です。
+- Change `OPENAI_CHAT_MODEL` and `EMBEDDING_MODEL` in `.env.local` to switch between providers.
+- Configure rate limits or alternative providers inside the upcoming [`packages/agents-tools`](/docs/agent-runtime-preview) module.
+- Learn how the embeddings stay fresh via [Reindex Architecture](/docs/reindex-architecture).
+
+## Debugging Tips
+
+- Inspect the Supabase SQL function `match_document_chunks` when relevance scores look off.
+- Turn on verbose logging in the Edge Function to trace chunk creation per document.
+- Use Supabase Studio vector previews to confirm that chunks include the expected markdown content.
