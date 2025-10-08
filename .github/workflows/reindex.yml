@@ -67,60 +67,76 @@ jobs:
             exit 1
           fi
 
-          payload=$(python -c '
-import json
-import os
+          python - <<'PYTHON'
+            import json
+            import os
+            import sys
+            import urllib.error
+            import urllib.request
 
 
-def parse_list(value):
-    if not value:
-        return []
-    items = []
-    for entry in value.replace(",", " ").split():
-        entry = entry.strip()
-        if entry:
-            items.append(entry)
-    return items
+            def parse_list(value: str) -> list[str]:
+                if not value:
+                    return []
+                items = []
+                for entry in value.replace(",", " ").split():
+                    entry = entry.strip()
+                    if entry:
+                        items.append(entry)
+                return items
 
 
-def deduplicate(items):
-    seen = set()
-    result = []
-    for item in items:
-        if item not in seen:
-            seen.add(item)
-            result.append(item)
-    return result
+            def deduplicate(items):
+                seen = set()
+                result = []
+                for item in items:
+                    if item not in seen:
+                        seen.add(item)
+                        result.append(item)
+                return result
 
 
-added = parse_list(os.environ.get("ADDED_FILES", ""))
-modified = parse_list(os.environ.get("MODIFIED_FILES", ""))
-deleted = parse_list(os.environ.get("DELETED_FILES", ""))
+            added = parse_list(os.environ.get("ADDED_FILES", ""))
+            modified = parse_list(os.environ.get("MODIFIED_FILES", ""))
+            deleted = parse_list(os.environ.get("DELETED_FILES", ""))
 
-changed = deduplicate(added + modified)
-deleted = deduplicate(deleted)
+            changed = deduplicate(added + modified)
+            deleted = deduplicate(deleted)
 
-payload = {
-    "repoRawBaseUrl": os.environ["BASE_URL"],
-    "changedPaths": changed,
-    "deletedPaths": deleted,
-}
+            payload = {
+                "repoRawBaseUrl": os.environ["BASE_URL"],
+                "changedPaths": changed,
+                "deletedPaths": deleted,
+            }
 
-print(json.dumps(payload))
-')
+            data = json.dumps(payload).encode("utf-8")
+            url = os.environ["EDGE_FUNCTION_URL"]
+            secret = os.environ["EDGE_FUNCTION_SECRET"]
 
-          tmp_response=$(mktemp)
-          status_code=$(curl -sS \
-            -o "$tmp_response" \
-            -w "%{http_code}" \
-            -X POST "$EDGE_FUNCTION_URL" \
-            -H "Content-Type: application/json" \
-            -H "x-edge-secret: $EDGE_FUNCTION_SECRET" \
-            -d "$payload")
+            request = urllib.request.Request(
+                url=url,
+                data=data,
+                headers={
+                    "Content-Type": "application/json",
+                    "x-edge-secret": secret,
+                },
+                method="POST",
+            )
 
-          echo "Edge function responded with status $status_code"
-          cat "$tmp_response"
-
-          if [ "$status_code" -ge 400 ]; then
-            exit 1
-          fi
+            try:
+                with urllib.request.urlopen(request) as response:
+                    body = response.read().decode("utf-8", errors="replace")
+                    status = response.status
+                    print(f"Edge function responded with status {status}")
+                    print(body)
+                    if status >= 400:
+                        sys.exit(1)
+            except urllib.error.HTTPError as error:
+                body = error.read().decode("utf-8", errors="replace")
+                print(f"Edge function error: {error.code}", file=sys.stderr)
+                print(body, file=sys.stderr)
+                sys.exit(1)
+            except Exception as exc:
+                print(f"Edge function request failed: {exc}", file=sys.stderr)
+                sys.exit(1)
+          PYTHON
