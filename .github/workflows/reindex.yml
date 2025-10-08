@@ -48,11 +48,16 @@ jobs:
           echo "base_url=https://raw.githubusercontent.com/${{ github.repository }}/$REF/" >> "$GITHUB_OUTPUT"
 
       - name: Skip when no docs changed
-        if: steps.changes.outputs.any_changed != 'true'
+        if: |
+          steps.changes.outputs.any_changed != 'true' &&
+          ! (github.event_name == 'workflow_dispatch' && github.event.inputs.force_full_sync == 'true')
         run: echo "No Markdown changes detected; skipping reindex call."
 
       - name: Call reindex Edge Function
-        if: steps.changes.outputs.any_changed == 'true' || (github.event_name == 'workflow_dispatch' && github.event.inputs.force_full_sync == 'true')
+        if: |
+          steps.changes.outputs.any_changed == 'true' ||
+          (github.event_name == 'workflow_dispatch' && github.event.inputs.force_full_sync == 'true')
+        uses: actions/github-script@v7
         env:
           EDGE_FUNCTION_URL: ${{ secrets.SUPABASE_REINDEX_FUNCTION_URL }}
           EDGE_FUNCTION_SECRET: ${{ secrets.EDGE_FUNCTION_REINDEX_SECRET }}
@@ -60,89 +65,98 @@ jobs:
           ADDED_FILES: ${{ steps.changes.outputs.added_files }}
           MODIFIED_FILES: ${{ steps.changes.outputs.modified_files }}
           DELETED_FILES: ${{ steps.changes.outputs.deleted_files }}
-        run: |
-          set -euo pipefail
+        with:
+          script: |
+            const { execSync } = require("node:child_process");
 
-          if [ -z "${EDGE_FUNCTION_URL:-}" ]; then
-            echo "SUPABASE_REINDEX_FUNCTION_URL secret is not configured." >&2
-            exit 1
-          fi
-
-          if [ -z "${EDGE_FUNCTION_SECRET:-}" ]; then
-            echo "EDGE_FUNCTION_REINDEX_SECRET secret is not configured." >&2
-            exit 1
-          fi
-
-          python - <<'PYTHON'
-            import json
-            import os
-            import sys
-            import urllib.error
-            import urllib.request
-
-
-            def parse_list(value: str) -> list[str]:
-                if not value:
-                    return []
-                items = []
-                for entry in value.replace(",", " ").split():
-                    entry = entry.strip()
-                    if entry:
-                        items.append(entry)
-                return items
-
-
-            def deduplicate(items):
-                seen = set()
-                result = []
-                for item in items:
-                    if item not in seen:
-                        seen.add(item)
-                        result.append(item)
-                return result
-
-
-            added = parse_list(os.environ.get("ADDED_FILES", ""))
-            modified = parse_list(os.environ.get("MODIFIED_FILES", ""))
-            deleted = parse_list(os.environ.get("DELETED_FILES", ""))
-
-            changed = deduplicate(added + modified)
-            deleted = deduplicate(deleted)
-
-            payload = {
-                "repoRawBaseUrl": os.environ["BASE_URL"],
-                "changedPaths": changed,
-                "deletedPaths": deleted,
+            if (!process.env.EDGE_FUNCTION_URL) {
+              core.setFailed("SUPABASE_REINDEX_FUNCTION_URL secret is not configured.");
+              return;
             }
 
-            data = json.dumps(payload).encode("utf-8")
-            url = os.environ["EDGE_FUNCTION_URL"]
-            secret = os.environ["EDGE_FUNCTION_SECRET"]
+            if (!process.env.EDGE_FUNCTION_SECRET) {
+              core.setFailed("EDGE_FUNCTION_REINDEX_SECRET secret is not configured.");
+              return;
+            }
 
-            request = urllib.request.Request(
-                url=url,
-                data=data,
-                headers={
-                    "Content-Type": "application/json",
-                    "x-edge-secret": secret,
+            if (!process.env.BASE_URL) {
+              core.setFailed("BASE_URL is not available from the metadata step.");
+              return;
+            }
+
+            const parseList = (value) => {
+              if (!value) return [];
+              return value
+                .split(/\r?\n/)
+                .map((item) => item.trim())
+                .filter(Boolean);
+            };
+
+            const deduplicate = (items) => [...new Set(items)];
+
+            const forceFullSync =
+              context.eventName === "workflow_dispatch" &&
+              (context.payload.inputs?.force_full_sync ?? "false") === "true";
+
+            let changedPaths = [];
+            let deletedPaths = [];
+
+            if (forceFullSync) {
+              core.info("force_full_sync requested; collecting all Markdown/MDX files.");
+              const output = execSync(
+                "git ls-tree --full-tree -r HEAD --name-only",
+                { encoding: "utf8" },
+              );
+              changedPaths = output
+                .split(/\r?\n/)
+                .map((line) => line.trim())
+                .filter(
+                  (line) =>
+                    line &&
+                    (line.endsWith(".md") || line.endsWith(".mdx")),
+                );
+            } else {
+              const added = parseList(process.env.ADDED_FILES);
+              const modified = parseList(process.env.MODIFIED_FILES);
+              const deleted = parseList(process.env.DELETED_FILES);
+              changedPaths = deduplicate([...added, ...modified]);
+              deletedPaths = deduplicate(deleted);
+            }
+
+            if (changedPaths.length === 0 && deletedPaths.length === 0) {
+              core.info("Nothing to reindex after evaluating inputs; exiting early.");
+              return;
+            }
+
+            const payload = {
+              repoRawBaseUrl: process.env.BASE_URL,
+              changedPaths,
+              deletedPaths,
+            };
+
+            core.info(
+              `Calling edge function with ${changedPaths.length} changed and ${deletedPaths.length} deleted paths.`,
+            );
+
+            try {
+              const response = await fetch(process.env.EDGE_FUNCTION_URL, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-edge-secret": process.env.EDGE_FUNCTION_SECRET,
                 },
-                method="POST",
-            )
+                body: JSON.stringify(payload),
+              });
 
-            try:
-                with urllib.request.urlopen(request) as response:
-                    body = response.read().decode("utf-8", errors="replace")
-                    status = response.status
-                    print(f"Edge function responded with status {status}")
-                    print(body)
-                    if status >= 400:
-                        sys.exit(1)
-            except urllib.error.HTTPError as error:
-                body = error.read().decode("utf-8", errors="replace")
-                print(f"Edge function error: {error.code}", file=sys.stderr)
-                print(body, file=sys.stderr)
-                sys.exit(1)
-            except Exception as exc:
-                print(f"Edge function request failed: {exc}", file=sys.stderr)
-                sys.exit(1)
-          PYTHON
+              const body = await response.text();
+              core.info(`Edge function responded with status ${response.status}`);
+              if (body) {
+                core.info(body);
+              }
+
+              if (!response.ok) {
+                core.setFailed(`Edge function failed with status ${response.status}`);
+              }
+            } catch (error) {
+              core.setFailed(`Edge function request failed: ${error instanceof Error ? error.message : String(error)}`);
+            }
