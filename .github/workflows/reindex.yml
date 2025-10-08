@@ -94,6 +94,27 @@ jobs:
 
             const deduplicate = (items) => [...new Set(items)];
 
+            const normalizePath = (value) => value.replace(/\\/g, "/");
+            const allowedPrefixes = ["apps/web/content/docs/"];
+            const isDocTarget = (value) => {
+              const normalized = normalizePath(value);
+              if (!normalized.endsWith(".md") && !normalized.endsWith(".mdx")) {
+                return false;
+              }
+              return allowedPrefixes.some((prefix) =>
+                normalized.startsWith(prefix)
+              );
+            };
+
+            const filterDocTargets = (paths) => {
+              const filtered = paths.filter(isDocTarget);
+              const skipped = paths.length - filtered.length;
+              if (skipped > 0) {
+                core.info(`Skipped ${skipped} Markdown files outside of supported directories.`);
+              }
+              return filtered;
+            };
+
             const forceFullSync =
               context.eventName === "workflow_dispatch" &&
               (context.payload.inputs?.force_full_sync ?? "false") === "true";
@@ -107,20 +128,22 @@ jobs:
                 "git ls-tree --full-tree -r HEAD --name-only",
                 { encoding: "utf8" },
               );
-              changedPaths = output
-                .split(/\r?\n/)
-                .map((line) => line.trim())
-                .filter(
-                  (line) =>
-                    line &&
-                    (line.endsWith(".md") || line.endsWith(".mdx")),
-                );
+              changedPaths = filterDocTargets(
+                output
+                  .split(/\r?\n/)
+                  .map((line) => line.trim())
+                  .filter(Boolean),
+              );
             } else {
               const added = parseList(process.env.ADDED_FILES);
               const modified = parseList(process.env.MODIFIED_FILES);
               const deleted = parseList(process.env.DELETED_FILES);
-              changedPaths = deduplicate([...added, ...modified]);
-              deletedPaths = deduplicate(deleted);
+              changedPaths = filterDocTargets(
+                deduplicate([...added, ...modified]).map(normalizePath),
+              );
+              deletedPaths = filterDocTargets(
+                deduplicate(deleted).map(normalizePath),
+              );
             }
 
             if (changedPaths.length === 0 && deletedPaths.length === 0) {
