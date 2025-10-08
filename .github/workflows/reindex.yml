@@ -52,7 +52,7 @@ jobs:
         run: echo "No Markdown changes detected; skipping reindex call."
 
       - name: Call reindex Edge Function
-        if: steps.changes.outputs.any_changed == 'true'
+        if: steps.changes.outputs.any_changed == 'true' || (github.event_name == 'workflow_dispatch' && github.event.inputs.force_full_sync == 'true')
         env:
           EDGE_FUNCTION_URL: ${{ secrets.SUPABASE_REINDEX_FUNCTION_URL }}
           EDGE_FUNCTION_SECRET: ${{ secrets.EDGE_FUNCTION_REINDEX_SECRET }}
