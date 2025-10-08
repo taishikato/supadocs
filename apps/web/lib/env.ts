@@ -22,8 +22,6 @@ export function getServerEnv(): ServerEnv {
   if (cachedEnv) return cachedEnv;
 
   const parsed = serverEnvSchema.safeParse(process.env);
-  console.log({ parsed });
-
   if (!parsed.success) {
     throw new Error(
       `Invalid server environment variables: ${parsed.error.message}`,
