@@ -100,6 +100,7 @@ serve(async (req: Request): Promise<Response> => {
   for (const rawPath of deletedPaths) {
     const docPath = normalisePath(rawPath);
     if (!docPath) continue;
+
     const { error } = await supabase
       .from("document_chunks")
       .delete()
@@ -114,6 +115,7 @@ serve(async (req: Request): Promise<Response> => {
   for (const rawPath of changedPaths) {
     const docPath = normalisePath(rawPath);
     if (!docPath) continue;
+
     if (!shouldIndex(docPath)) {
       summary.skipped.push({
         path: docPath,
