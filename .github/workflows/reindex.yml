@@ -67,11 +67,12 @@ jobs:
             exit 1
           fi
 
-          payload=$(python - <<'PYTHON'
+          payload=$(python -c '
 import json
 import os
 
-def parse_list(value: str) -> list[str]:
+
+def parse_list(value):
     if not value:
         return []
     items = []
@@ -81,6 +82,7 @@ def parse_list(value: str) -> list[str]:
             items.append(entry)
     return items
 
+
 def deduplicate(items):
     seen = set()
     result = []
@@ -89,6 +91,7 @@ def deduplicate(items):
             seen.add(item)
             result.append(item)
     return result
+
 
 added = parse_list(os.environ.get("ADDED_FILES", ""))
 modified = parse_list(os.environ.get("MODIFIED_FILES", ""))
@@ -104,8 +107,7 @@ payload = {
 }
 
 print(json.dumps(payload))
-PYTHON
-)
+')
 
           tmp_response=$(mktemp)
           status_code=$(curl -sS \
