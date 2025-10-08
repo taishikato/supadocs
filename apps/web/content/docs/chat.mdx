@@ -1,0 +1,20 @@
+---
+title: チャット機能の概要
+description: Supadocs のチャット機能と RAG パイプラインの流れ
+---
+
+# チャット機能の概要
+
+Supadocs のチャットは、ドキュメントから抽出した埋め込みを利用して回答します。
+
+## データフロー
+
+- GitHub Actions が更新された Markdown を検知し、Edge Function に送信。
+- Edge Function が Markdown をチャンク化し、埋め込みを生成して Supabase に保存。
+- `/api/chat` は Supabase の `match_document_chunks` を呼び出して上位チャンクを取得。
+- Vercel AI SDK を通じて LLM にコンテキストを渡し、回答を生成します。
+
+## カスタマイズ
+
+- 埋め込みモデルの変更は `.env` の `EMBEDDING_MODEL` で制御できます。
+- チャットモデルは `OPENAI_CHAT_MODEL` を変更すると切り替え可能です。

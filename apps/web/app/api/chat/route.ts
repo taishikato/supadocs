@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { streamText } from "ai";
 import { generateEmbeddings } from "@workspace/core/embeddings";
 import { getServiceSupabaseClient } from "@/lib/supabase";
-import { getServerEnv } from "@/lib/env";
+import { getChatModel } from "@/lib/ai";
 
 const requestSchema = z.object({
   question: z.string().min(1, "質問を入力してください"),
@@ -32,7 +33,6 @@ export async function POST(request: Request) {
   const { question, topK } = parsed.data;
 
   try {
-    const env = getServerEnv();
     const embeddingResult = await generateEmbeddings({ input: question });
     const embedding = embeddingResult.embeddings[0];
     const supabase = getServiceSupabaseClient();
@@ -52,16 +52,68 @@ export async function POST(request: Request) {
     }
 
     const sources = ((data ?? []) as MatchResult[]).filter(Boolean);
-    const answer = await callOpenAI({
-      apiKey: env.OPENAI_API_KEY,
-      model: env.OPENAI_CHAT_MODEL,
-      question,
-      matches: sources,
+    const context = sources.length
+      ? sources
+        .map(
+          (match, index) =>
+            `Context ${index + 1} (similarity ${(match.similarity * 100).toFixed(1)}%):\nSource: ${match.doc_path}\n${match.content.trim()}`,
+        )
+        .join("\n\n")
+      : "No relevant context was retrieved.";
+
+    const prompt = `質問: ${question}\n\nコンテキスト:\n${context}\n\n回答は日本語で、必要に応じて箇条書きで整理してください。`;
+
+    const chatModel = getChatModel();
+    const result = await streamText({
+      model: chatModel,
+      system:
+        "あなたは Supadocs のドキュメントに基づいて回答する日本語のアシスタントです。提供されたコンテキスト以外の情報は推測せず、わからない場合はその旨を伝えてください。",
+      prompt,
+      temperature: 0.2,
     });
 
-    return NextResponse.json({
-      answer,
-      sources,
+    const encoder = new TextEncoder();
+
+    const stream = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        controller.enqueue(
+          encoder.encode(
+            `event: sources\ndata: ${JSON.stringify(sources)}\n\n`,
+          ),
+        );
+
+        try {
+          for await (const chunk of result.textStream) {
+            controller.enqueue(
+              encoder.encode(
+                `event: text\ndata: ${JSON.stringify({ delta: chunk })}\n\n`,
+              ),
+            );
+          }
+          controller.enqueue(encoder.encode(`event: end\ndata: {}\n\n`));
+        } catch (streamError) {
+          console.error("/api/chat stream error", streamError);
+          controller.enqueue(
+            encoder.encode(
+              `event: error\ndata: ${JSON.stringify({ message: "Stream error" })}\n\n`,
+            ),
+          );
+        } finally {
+          controller.close();
+          await result.consumeStream().catch(() => undefined);
+        }
+      },
+      async cancel() {
+        await result.consumeStream().catch(() => undefined);
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+      },
     });
   } catch (error) {
     console.error("/api/chat failure", error);
@@ -73,65 +125,4 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-}
-
-async function callOpenAI(params: {
-  apiKey: string;
-  model: string;
-  question: string;
-  matches: MatchResult[];
-}): Promise<string> {
-  const { apiKey, model, question, matches } = params;
-  const context = matches.length
-    ? matches
-      .map(
-        (match, index) =>
-          `Context ${index + 1} (similarity ${
-            (match.similarity * 100).toFixed(1)
-          }%):\nSource: ${match.doc_path}\n${match.content.trim()}`,
-      )
-      .join("\n\n")
-    : "No relevant context was retrieved.";
-
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.2,
-      messages: [
-        {
-          role: "system",
-          content:
-            "あなたは Supadocs のドキュメントに基づいて回答する日本語のアシスタントです。提供されたコンテキスト以外の情報は推測せず、わからない場合はその旨を伝えてください。",
-        },
-        {
-          role: "user",
-          content:
-            `質問: ${question}\n\nコンテキスト:\n${context}\n\n回答は日本語で、必要に応じて箇条書きで整理してください。`,
-        },
-      ],
-    }),
-  });
-
-  if (!response.ok) {
-    let detail = `${response.status} ${response.statusText}`;
-    try {
-      const payload = await response.json();
-      detail = payload?.error?.message ?? payload?.message ?? detail;
-    } catch {
-      // ignore
-    }
-    throw new Error(`OpenAI API error: ${detail}`);
-  }
-
-  const payload = await response.json();
-  const answer: string | undefined = payload?.choices?.[0]?.message?.content;
-  if (!answer) {
-    throw new Error("OpenAI API returned an empty response");
-  }
-  return answer.trim();
 }

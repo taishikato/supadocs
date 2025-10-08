@@ -30,9 +30,9 @@ This project bridges the gap between simple static docs and modern, AI-driven de
 ### Core Features
 | Category | Description | Notes |
 |-----------|-------------|-------|
-| **Documentation Rendering** | Render Markdown / MDX docs in Next.js | Similar structure to Fumadocs (`/docs` folder). |
+| **Documentation Rendering** | Render Markdown / MDX docs in Next.js | `/docs` folder. |
 | **AI Search (RAG)** | Store embeddings in Supabase (pgvector) and query via semantic search | Uses LangChain or Supabase AI SDK. |
-| **Chat UI** | Conversational Q&A interface for documentation | Built with shadcn/ui + Tailwind. |
+| **Chat UI** | Conversational Q&A interface for documentation | Built with shadcn/ui + Tailwind. Uses Vercel AI SDK for streaming responses. |
 | **Auto-indexing via GitHub Actions** | On push or PR merge, generate embeddings and update Supabase | Triggers Supabase Edge Function via webhook. |
 | **Markdown Export** | Allow users to download docs as Markdown | For offline or backup use. |
 | **UI Styling** | Tailwind CSS + shadcn/ui | Clean, modern, minimal look. |
@@ -132,7 +132,7 @@ User edits Markdown locally and pushes changes to GitHub.
 
 * Query embeddings from Supabase for semantic search.
 * Retrieve top-k relevant chunks.
-* Pass them to an LLM (e.g., GPT-4o-mini) for contextual Q&A.
+* Pass them to an LLM via Vercel AI SDK (e.g., GPT-4o-mini) for contextual Q&A.
 * Display answers + source references in chat UI.
 
 ---

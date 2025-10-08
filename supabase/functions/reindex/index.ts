@@ -18,12 +18,12 @@ const EDGE_SECRET = Deno.env.get("EDGE_FUNCTION_REINDEX_SECRET");
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 const EMBEDDING_MODEL = Deno.env.get("EMBEDDING_MODEL") ??
   "text-embedding-3-small";
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+const NEXT_PUBLIC_SUPABASE_URL = Deno.env.get("NEXT_PUBLIC_SUPABASE_URL");
 const SERVICE_ROLE_KEY = Deno.env.get("SERVICE_ROLE_KEY") ??
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-if (!SUPABASE_URL) {
-  throw new Error("Missing SUPABASE_URL environment variable");
+if (!NEXT_PUBLIC_SUPABASE_URL) {
+  throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL environment variable");
 }
 if (!SERVICE_ROLE_KEY) {
   throw new Error(
@@ -31,7 +31,7 @@ if (!SERVICE_ROLE_KEY) {
   );
 }
 
-const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+const supabase = createClient(NEXT_PUBLIC_SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { persistSession: false },
 });
 

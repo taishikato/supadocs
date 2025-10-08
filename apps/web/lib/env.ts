@@ -1,11 +1,12 @@
 import { z } from "zod";
 
 const serverEnvSchema = z.object({
-  SUPABASE_URL: z.string().url(),
-  SUPABASE_ANON_KEY: z.string().optional(),
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
   SERVICE_ROLE_KEY: z.string().optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
   OPENAI_API_KEY: z.string(),
+  OPENAI_BASE_URL: z.string().url().optional(),
   OPENAI_CHAT_MODEL: z
     .string()
     .optional()
@@ -21,6 +22,8 @@ export function getServerEnv(): ServerEnv {
   if (cachedEnv) return cachedEnv;
 
   const parsed = serverEnvSchema.safeParse(process.env);
+  console.log({ parsed });
+
   if (!parsed.success) {
     throw new Error(
       `Invalid server environment variables: ${parsed.error.message}`,

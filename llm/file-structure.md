@@ -20,7 +20,8 @@ repo-root/
 │     ├─ lib/
 │     │  ├─ docs.ts                 # MDXローダー
 │     │  ├─ env.ts                  # 環境変数バリデーション
-│     │  └─ supabase.ts             # サーバー用 Supabase client
+│     │  ├─ supabase.ts             # サーバー用 Supabase client
+│     │  └─ ai.ts                   # Vercel AI SDK モデルラッパー
 │     ├─ next.config.mjs
 │     ├─ tailwind.config.ts
 │     ├─ postcss.config.mjs
