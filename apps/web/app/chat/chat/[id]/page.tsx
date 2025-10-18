@@ -34,7 +34,6 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
           initialChatModel={DEFAULT_CHAT_MODEL}
           initialLastContext={chat.last_context ?? undefined}
           initialMessages={uiMessages}
-          initialVisibilityType={chat.visibility}
           isReadonly={false}
         />
         <DataStreamHandler />
@@ -50,7 +49,6 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
         initialChatModel={chatModelFromCookie.value}
         initialLastContext={chat.last_context ?? undefined}
         initialMessages={uiMessages}
-        initialVisibilityType={chat.visibility}
         isReadonly={false}
       />
       <DataStreamHandler />
