@@ -10,10 +10,8 @@ import { generateUUID } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
   DialogTitle,
-  DialogClose,
+  DialogOverlay,
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
 
@@ -38,7 +36,8 @@ export function ChatModal({ initialChatModel }: ChatModalProps) {
       <DialogTrigger asChild>
         <Button variant="outline">Try the Chat</Button>
       </DialogTrigger>
-      <DialogContent className="bg-transparent border-0 shadow-none focus-visible:outline-none">
+      <DialogOverlay className="backdrop-blur-md" />
+      <DialogContent className="bg-transparent border-0 shadow-none focus-visible:outline-none h-dvh">
         <DialogTitle>Supadocs</DialogTitle>
         <DataStreamProvider key={chatId}>
           <Chat

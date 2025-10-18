@@ -25,7 +25,6 @@ import { ChatSDKError } from "@/lib/errors";
 import type { Attachment, ChatMessage } from "@/lib/types";
 import type { AppUsage } from "@/lib/usage";
 import { fetcher, fetchWithErrorHandlers, generateUUID } from "@/lib/utils";
-// import { Artifact } from "./artifact";
 import { useDataStream } from "./data-stream-provider";
 import { Messages } from "./messages";
 import { MultimodalInput } from "./multimodal-input";
@@ -150,7 +149,7 @@ export function Chat({
 
   return (
     <>
-      <div className="overscroll-behavior-contain flex h-dvh min-w-0 touch-pan-y flex-col">
+      <div className="overscroll-behavior-contain flex h-full min-w-0 touch-pan-y flex-col">
         {/* <ChatHeader
           chatId={id}
           isReadonly={isReadonly}
@@ -169,7 +168,7 @@ export function Chat({
           votes={votes}
         />
 
-        <div className="sticky bottom-0 z-1 mx-auto flex w-full max-w-4xl gap-2 border-t-0 px-2 pb-3 md:px-4 md:pb-4">
+        <div className="z-1 mx-auto mt-auto flex w-full max-w-4xl gap-2 border-t-0 px-2 pb-3 md:px-4 md:pb-4">
           {!isReadonly && (
             <MultimodalInput
               attachments={attachments}
@@ -186,24 +185,6 @@ export function Chat({
           )}
         </div>
       </div>
-
-      {/* <Artifact
-        attachments={attachments}
-        chatId={id}
-        input={input}
-        isReadonly={isReadonly}
-        messages={messages}
-        regenerate={regenerate}
-        selectedModelId={currentModelId}
-        selectedVisibilityType={visibilityType}
-        sendMessage={sendMessage}
-        setAttachments={setAttachments}
-        setInput={setInput}
-        setMessages={setMessages}
-        status={status}
-        stop={stop}
-        votes={votes}
-      /> */}
 
       <AlertDialog
         onOpenChange={setShowCreditCardAlert}
