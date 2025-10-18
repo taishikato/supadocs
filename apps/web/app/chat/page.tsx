@@ -1,26 +1,43 @@
-import Link from "next/link";
-import { ChatPanel } from "@/components/chat/chat-panel";
+import { cookies } from "next/headers";
+import { Chat } from "@/components/chat";
+import { DataStreamHandler } from "@/components/data-stream-handler";
+import { generateUUID } from "@/lib/utils";
 
-export default function ChatPage() {
+export default async function Page() {
+  const id = generateUUID();
+
+  const cookieStore = await cookies();
+  const modelIdFromCookie = cookieStore.get("chat-model");
+
+  if (!modelIdFromCookie) {
+    return (
+      <>
+        <Chat
+          autoResume={false}
+          id={id}
+          initialChatModel="gpt-4o-mini-2024-07-18"
+          initialMessages={[]}
+          initialVisibilityType="private"
+          isReadonly={false}
+          key={id}
+        />
+        <DataStreamHandler />
+      </>
+    );
+  }
+
   return (
-    <main className="mx-auto flex min-h-svh max-w-4xl flex-col gap-8 px-6 py-12">
-      <header className="flex flex-col gap-2">
-        <Link
-          href="/"
-          className="text-sm text-muted-foreground hover:text-foreground"
-        >
-          ← トップに戻る
-        </Link>
-        <h1 className="text-3xl font-bold">ドキュメントチャット</h1>
-        <p className="text-muted-foreground">
-          Supabase
-          の埋め込み検索を利用して、関連するドキュメントを引用しながら回答します。
-        </p>
-      </header>
-
-      <section className="flex flex-1 flex-col gap-6">
-        <ChatPanel />
-      </section>
-    </main>
+    <>
+      <Chat
+        autoResume={false}
+        id={id}
+        initialChatModel={modelIdFromCookie.value}
+        initialMessages={[]}
+        initialVisibilityType="private"
+        isReadonly={false}
+        key={id}
+      />
+      <DataStreamHandler />
+    </>
   );
 }
