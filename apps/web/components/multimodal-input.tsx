@@ -3,7 +3,6 @@
 import type { UseChatHelpers } from "@ai-sdk/react";
 import equal from "fast-deep-equal";
 import {
-  type ChangeEvent,
   type Dispatch,
   memo,
   type SetStateAction,
@@ -18,7 +17,7 @@ import { useLocalStorage, useWindowSize } from "usehooks-ts";
 // import { chatModels } from "@/lib/ai/models";
 // import { myProvider } from "@/lib/ai/providers";
 import type { Attachment, ChatMessage } from "@/lib/types";
-import type { AppUsage } from "@/lib/usage";
+// import type { AppUsage } from "@/lib/usage";
 import { cn } from "@/lib/utils";
 // import { Context } from "./elements/context";
 import {
@@ -141,62 +140,9 @@ function PureMultimodalInput({
     resetHeight,
   ]);
 
-  const uploadFile = useCallback(async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch("/api/files/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const { url, pathname, contentType } = data;
-
-        return {
-          url,
-          name: pathname,
-          contentType,
-        };
-      }
-      const { error } = await response.json();
-      toast.error(error);
-    } catch (_error) {
-      toast.error("Failed to upload file, please try again!");
-    }
-  }, []);
-
   // const _modelResolver = useMemo(() => {
   //   return myProvider.languageModel(selectedModelId);
   // }, [selectedModelId]);
-
-  const handleFileChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(event.target.files || []);
-
-      setUploadQueue(files.map((file) => file.name));
-
-      try {
-        const uploadPromises = files.map((file) => uploadFile(file));
-        const uploadedAttachments = await Promise.all(uploadPromises);
-        const successfullyUploadedAttachments = uploadedAttachments.filter(
-          (attachment) => attachment !== undefined
-        );
-
-        setAttachments((currentAttachments) => [
-          ...currentAttachments,
-          ...successfullyUploadedAttachments,
-        ]);
-      } catch (error) {
-        console.error("Error uploading files!", error);
-      } finally {
-        setUploadQueue([]);
-      }
-    },
-    [setAttachments, uploadFile]
-  );
 
   return (
     <div className={cn("relative flex w-full flex-col gap-4", className)}>
@@ -209,15 +155,6 @@ function PureMultimodalInput({
             sendMessage={sendMessage}
           />
         )} */}
-
-      <input
-        className="-top-4 -left-4 pointer-events-none fixed size-0.5 opacity-0"
-        multiple
-        onChange={handleFileChange}
-        ref={fileInputRef}
-        tabIndex={-1}
-        type="file"
-      />
 
       <PromptInput
         className="rounded-xl border border-border bg-background p-3 shadow-xs transition-all duration-200 focus-within:border-border hover:border-muted-foreground/50"
