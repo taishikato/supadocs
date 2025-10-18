@@ -272,12 +272,9 @@ const PurePreviewMessage = ({
 
           {!isReadonly && (
             <MessageActions
-              chatId={chatId}
               isLoading={isLoading}
               key={`action-${message.id}`}
               message={message}
-              setMode={setMode}
-              vote={vote}
             />
           )}
         </div>
