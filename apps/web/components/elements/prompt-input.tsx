@@ -107,20 +107,6 @@ export const PromptInputToolbar = ({
 
 export type PromptInputToolsProps = HTMLAttributes<HTMLDivElement>;
 
-export const PromptInputTools = ({
-  className,
-  ...props
-}: PromptInputToolsProps) => (
-  <div
-    className={cn(
-      "flex items-center gap-1",
-      "[&_button:first-child]:rounded-bl-xl",
-      className
-    )}
-    {...props}
-  />
-);
-
 export type PromptInputButtonProps = ComponentProps<typeof Button>;
 
 export const PromptInputButton = ({

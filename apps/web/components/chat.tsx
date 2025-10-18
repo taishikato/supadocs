@@ -184,10 +184,6 @@ export function Chat({
               attachments={attachments}
               chatId={id}
               input={input}
-              messages={messages}
-              onModelChange={setCurrentModelId}
-              selectedModelId={currentModelId}
-              selectedVisibilityType="public"
               sendMessage={sendMessage}
               setAttachments={setAttachments}
               setInput={setInput}

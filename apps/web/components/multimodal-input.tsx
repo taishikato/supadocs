@@ -2,14 +2,12 @@
 
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { Trigger } from "@radix-ui/react-select";
-import type { UIMessage } from "ai";
 import equal from "fast-deep-equal";
 import {
   type ChangeEvent,
   type Dispatch,
   memo,
   type SetStateAction,
-  // startTransition,
   useCallback,
   useEffect,
   useMemo,
@@ -33,7 +31,6 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputToolbar,
-  PromptInputTools,
 } from "./elements/prompt-input";
 import {
   ArrowUpIcon,
@@ -42,10 +39,7 @@ import {
   PaperclipIcon,
   StopIcon,
 } from "./icons";
-// import { PreviewAttachment } from "./preview-attachment";
-// import { SuggestedActions } from "./suggested-actions";
 import { Button } from "@workspace/ui/components/button";
-// import type { VisibilityType } from "./visibility-selector";
 
 function PureMultimodalInput({
   chatId,
@@ -55,13 +49,9 @@ function PureMultimodalInput({
   stop,
   attachments,
   setAttachments,
-  messages,
   setMessages,
   sendMessage,
   className,
-  selectedVisibilityType,
-  selectedModelId,
-  onModelChange,
   usage,
 }: {
   chatId: string;
@@ -71,13 +61,9 @@ function PureMultimodalInput({
   stop: () => void;
   attachments: Attachment[];
   setAttachments: Dispatch<SetStateAction<Attachment[]>>;
-  messages: UIMessage[];
   setMessages: UseChatHelpers<ChatMessage>["setMessages"];
   sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
   className?: string;
-  selectedVisibilityType: "private" | "public";
-  selectedModelId: string;
-  onModelChange?: (modelId: string) => void;
   usage?: AppUsage;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -264,39 +250,6 @@ function PureMultimodalInput({
           }
         }}
       >
-        {(attachments.length > 0 || uploadQueue.length > 0) && (
-          <div
-            className="flex flex-row items-end gap-2 overflow-x-scroll"
-            data-testid="attachments-preview"
-          >
-            {/* {attachments.map((attachment) => (
-              <PreviewAttachment
-                attachment={attachment}
-                key={attachment.url}
-                onRemove={() => {
-                  setAttachments((currentAttachments) =>
-                    currentAttachments.filter((a) => a.url !== attachment.url)
-                  );
-                  if (fileInputRef.current) {
-                    fileInputRef.current.value = "";
-                  }
-                }}
-              />
-            ))} */}
-
-            {/* {uploadQueue.map((filename) => (
-              <PreviewAttachment
-                attachment={{
-                  url: "",
-                  name: filename,
-                  contentType: "",
-                }}
-                isUploading={true}
-                key={filename}
-              />
-            ))} */}
-          </div>
-        )}
         <div className="flex flex-row items-start gap-1 sm:gap-2">
           <PromptInputTextarea
             autoFocus
@@ -310,22 +263,9 @@ function PureMultimodalInput({
             ref={textareaRef}
             rows={1}
             value={input}
-          />{" "}
-          {/* <Context {...contextProps} /> */}
+          />
         </div>
-        <PromptInputToolbar className="!border-top-0 border-t-0! p-0 shadow-none dark:border-0 dark:border-transparent!">
-          <PromptInputTools className="gap-0 sm:gap-0.5">
-            <AttachmentsButton
-              fileInputRef={fileInputRef}
-              selectedModelId={selectedModelId}
-              status={status}
-            />
-            <ModelSelectorCompact
-              onModelChange={onModelChange}
-              selectedModelId={selectedModelId}
-            />
-          </PromptInputTools>
-
+        <PromptInputToolbar className="!border-top-0 border-t-0! p-0 shadow-none dark:border-0 dark:border-transparent! justify-end">
           {status === "submitted" ? (
             <StopButton setMessages={setMessages} stop={stop} />
           ) : (
@@ -369,12 +309,6 @@ export const MultimodalInput = memo(
     if (!equal(prevProps.attachments, nextProps.attachments)) {
       return false;
     }
-    if (prevProps.selectedVisibilityType !== nextProps.selectedVisibilityType) {
-      return false;
-    }
-    if (prevProps.selectedModelId !== nextProps.selectedModelId) {
-      return false;
-    }
 
     return true;
   }
@@ -406,8 +340,6 @@ function PureAttachmentsButton({
     </Button>
   );
 }
-
-const AttachmentsButton = memo(PureAttachmentsButton);
 
 function PureModelSelectorCompact({
   selectedModelId,
