@@ -23,7 +23,6 @@ import { MessageActions } from "./message-actions";
 // import { MessageEditor } from "./message-editor";
 import { MessageReasoning } from "./message-reasoning";
 // import { PreviewAttachment } from "./preview-attachment";
-import { Weather } from "./weather";
 
 const PurePreviewMessage = ({
   chatId,
