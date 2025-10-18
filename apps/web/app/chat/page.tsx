@@ -17,7 +17,6 @@ export default async function Page() {
           id={id}
           initialChatModel="gpt-4o-mini-2024-07-18"
           initialMessages={[]}
-          initialVisibilityType="private"
           isReadonly={false}
           key={id}
         />
@@ -33,7 +32,6 @@ export default async function Page() {
         id={id}
         initialChatModel={modelIdFromCookie.value}
         initialMessages={[]}
-        initialVisibilityType="private"
         isReadonly={false}
         key={id}
       />

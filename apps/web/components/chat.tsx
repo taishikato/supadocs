@@ -37,7 +37,6 @@ export function Chat({
   id,
   initialMessages,
   initialChatModel,
-  initialVisibilityType,
   isReadonly,
   autoResume,
   initialLastContext,
@@ -45,18 +44,10 @@ export function Chat({
   id: string;
   initialMessages: ChatMessage[];
   initialChatModel: string;
-  // initialVisibilityType: VisibilityType;
-  initialVisibilityType: any;
   isReadonly: boolean;
   autoResume: boolean;
   initialLastContext?: AppUsage;
 }) {
-  // const { visibilityType } = useChatVisibility({
-  //   chatId: id,
-  //   initialVisibilityType,
-  // });
-
-  const { mutate } = useSWRConfig();
   const { setDataStream } = useDataStream();
 
   const [input, setInput] = useState<string>("");
