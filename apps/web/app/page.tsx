@@ -1,7 +1,15 @@
-import Link from "next/link"
-import { Button } from "@workspace/ui/components/button"
+import { cookies } from "next/headers";
+import Link from "next/link";
 
-export default function Page() {
+import { Button } from "@workspace/ui/components/button";
+
+import { ChatModal } from "@/components/chat-modal";
+
+export default async function Page() {
+  const cookieStore = await cookies();
+  const initialChatModel =
+    cookieStore.get("chat-model")?.value ?? "gpt-4o-mini-2024-07-18";
+
   return (
     <main className="flex min-h-svh flex-col items-center justify-center px-6 py-24 text-center">
       <div className="mx-auto max-w-2xl space-y-6">
@@ -10,17 +18,16 @@ export default function Page() {
         </span>
         <h1 className="text-4xl font-bold sm:text-5xl">Supadocs</h1>
         <p className="text-lg text-muted-foreground">
-          Author in Markdown and ship a RAG-ready documentation site with chat on day one.
+          Author in Markdown and ship a RAG-ready documentation site with chat
+          on day one.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Button asChild>
             <Link href="/docs">View Documentation</Link>
           </Button>
-          <Button variant="outline" asChild>
-            <Link href="/chat">Try the Chat</Link>
-          </Button>
+          <ChatModal initialChatModel={initialChatModel} />
         </div>
       </div>
     </main>
-  )
+  );
 }
