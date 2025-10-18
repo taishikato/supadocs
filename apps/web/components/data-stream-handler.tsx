@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { initialArtifactData, useArtifact } from "@/hooks/use-artifact";
+// import { useArtifact } from "@/hooks/use-artifact";
 // import { artifactDefinitions } from "./artifact";
 import { useDataStream } from "./data-stream-provider";
 
 export function DataStreamHandler() {
   const { dataStream } = useDataStream();
 
-  const { artifact, setArtifact, setMetadata } = useArtifact();
+  // const { artifact, setArtifact, setMetadata } = useArtifact();
   const lastProcessedIndex = useRef(-1);
 
   useEffect(() => {
@@ -78,7 +78,7 @@ export function DataStreamHandler() {
     //     }
     //   });
     // }
-  }, [dataStream, setArtifact, setMetadata, artifact]);
+  }, [dataStream]);
 
   return null;
 }
