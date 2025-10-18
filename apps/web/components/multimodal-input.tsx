@@ -17,7 +17,6 @@ import { useLocalStorage, useWindowSize } from "usehooks-ts";
 // import { chatModels } from "@/lib/ai/models";
 // import { myProvider } from "@/lib/ai/providers";
 import type { Attachment, ChatMessage } from "@/lib/types";
-// import type { AppUsage } from "@/lib/usage";
 import { cn } from "@/lib/utils";
 // import { Context } from "./elements/context";
 import {
@@ -98,12 +97,9 @@ function PureMultimodalInput({
     setInput(event.target.value);
   };
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<string[]>([]);
 
   const submitForm = useCallback(() => {
-    window.history.replaceState({}, "", `/chat/chat/${chatId}`);
-
     sendMessage({
       role: "user",
       parts: [
