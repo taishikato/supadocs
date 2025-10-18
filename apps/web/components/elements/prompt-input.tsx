@@ -171,10 +171,6 @@ export const PromptInputSubmit = ({
 
 export type PromptInputModelSelectProps = ComponentProps<typeof Select>;
 
-export const PromptInputModelSelect = (props: PromptInputModelSelectProps) => (
-  <Select {...props} />
-);
-
 export type PromptInputModelSelectTriggerProps = ComponentProps<
   typeof SelectTrigger
 >;
@@ -197,13 +193,6 @@ export const PromptInputModelSelectTrigger = ({
 export type PromptInputModelSelectContentProps = ComponentProps<
   typeof SelectContent
 >;
-
-export const PromptInputModelSelectContent = ({
-  className,
-  ...props
-}: PromptInputModelSelectContentProps) => (
-  <SelectContent className={cn(className)} {...props} />
-);
 
 export type PromptInputModelSelectItemProps = ComponentProps<typeof SelectItem>;
 
