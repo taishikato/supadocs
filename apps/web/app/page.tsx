@@ -10,14 +10,14 @@ export default function Page() {
         </span>
         <h1 className="text-4xl font-bold sm:text-5xl">Supadocs</h1>
         <p className="text-lg text-muted-foreground">
-          Markdown で書くだけで、RAG 対応のドキュメンテーションサイトとチャットが完成します。
+          Author in Markdown and ship a RAG-ready documentation site with chat on day one.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Button asChild>
-            <Link href="/docs">ドキュメントを見る</Link>
+            <Link href="/docs">View Documentation</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/chat">チャットを試す</Link>
+            <Link href="/chat">Try the Chat</Link>
           </Button>
         </div>
       </div>

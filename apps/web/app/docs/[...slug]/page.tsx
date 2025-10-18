@@ -39,7 +39,7 @@ export default async function DocPage(props: PageProps) {
       <div className="mx-auto max-w-3xl px-6 py-12">
         <h1 className="text-3xl font-bold">Docs</h1>
         <p className="mt-4 text-muted-foreground">
-          ドキュメントを選択してください。
+          Select a document to view.
         </p>
       </div>
     );
@@ -61,7 +61,7 @@ export default async function DocPage(props: PageProps) {
           href="/"
           className="text-sm text-muted-foreground hover:text-foreground"
         >
-          ← トップに戻る
+          ← Back to home
         </Link>
         <h1 className="mt-4 text-4xl font-bold">{doc.title}</h1>
         {doc.description ? (
@@ -73,7 +73,7 @@ export default async function DocPage(props: PageProps) {
           <Button variant="outline" size="sm" asChild>
             <a href={downloadHref} download>
               <Download className="size-4" aria-hidden="true" />
-              <span>Markdownをダウンロード</span>
+              <span>Download Markdown</span>
             </a>
           </Button>
         </div>

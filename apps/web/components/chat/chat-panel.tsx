@@ -31,7 +31,7 @@ export function ChatPanel({ initialQuestion }: ChatPanelProps) {
             id: generateId(),
             role: "assistant",
             content:
-              "Supadocs へようこそ！ドキュメントについて質問してみてください。",
+              "Welcome to Supadocs! Feel free to ask anything about the documentation.",
           },
           {
             id: generateId(),
@@ -44,7 +44,7 @@ export function ChatPanel({ initialQuestion }: ChatPanelProps) {
             id: generateId(),
             role: "assistant",
             content:
-              "Supadocs へようこそ！プロジェクトに関する質問があれば入力してください。",
+              "Welcome to Supadocs! Ask a question about your project to get started.",
           },
         ]
   );
@@ -141,7 +141,7 @@ export function ChatPanel({ initialQuestion }: ChatPanelProps) {
       });
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "回答の生成に失敗しました";
+        err instanceof Error ? err.message : "Failed to generate a response.";
       setError(message);
       setMessages((prev) =>
         prev.map((item) =>
@@ -176,16 +176,16 @@ export function ChatPanel({ initialQuestion }: ChatPanelProps) {
           name="question"
           value={input}
           onChange={(event) => setInput(event.target.value)}
-          placeholder="ドキュメントについて質問を入力してください"
+          placeholder="Ask a question about the documentation"
           rows={3}
           className="w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
         <div className="flex items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            AI を利用して関連ドキュメントを検索し回答します。
+            The AI will search related documents and craft a grounded response.
           </p>
           <Button type="submit" size="sm" disabled={!canSend}>
-            {isSending ? "送信中..." : "送信"}
+            {isSending ? "Sending..." : "Send"}
           </Button>
         </div>
         {error ? <p className="text-xs text-destructive">{error}</p> : null}
@@ -209,14 +209,14 @@ function ChatMessage({ message }: { message: Message }) {
       {isAssistant && message.sources && message.sources.length > 0 ? (
         <div className="rounded-lg border border-border bg-muted/30 p-3">
           <p className="text-xs font-semibold text-muted-foreground">
-            参考ドキュメント
+            Reference documents
           </p>
           <ul className="mt-2 space-y-2 text-xs">
             {message.sources.map((source, index) => (
               <li key={`${source.doc_path}-${index}`} className="leading-snug">
                 <span className="font-medium">{source.doc_path}</span>
                 <span className="ml-2 text-muted-foreground">
-                  類似度 {(source.similarity * 100).toFixed(1)}%
+                  Similarity {(source.similarity * 100).toFixed(1)}%
                 </span>
                 <p className="mt-1 text-muted-foreground">{source.content}</p>
               </li>

@@ -14,7 +14,7 @@ export default async function DocsIndexPage() {
     <div className="mx-auto max-w-3xl px-6 py-12">
       <h1 className="text-3xl font-bold">Documentation</h1>
       <p className="mt-4 text-muted-foreground">
-        Supadocs の最新ドキュメント一覧です。
+        Browse the latest Supadocs documentation.
       </p>
 
       <ul className="mt-8 space-y-6">

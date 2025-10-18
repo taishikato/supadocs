@@ -6,7 +6,7 @@ import { getServiceSupabaseClient } from "@/lib/supabase";
 import { getChatModel } from "@/lib/ai";
 
 const requestSchema = z.object({
-  question: z.string().min(1, "質問を入力してください"),
+  question: z.string().min(1, "Please enter a question"),
   topK: z.number().int().positive().max(10).optional(),
 });
 
@@ -64,13 +64,13 @@ export async function POST(request: Request) {
       : "No relevant context was retrieved.";
 
     const prompt =
-      `質問: ${question}\n\nコンテキスト:\n${context}\n\n回答は日本語で、必要に応じて箇条書きで整理してください。`;
+      `Question: ${question}\n\nContext:\n${context}\n\nRespond in English, stay grounded in the provided context, and use bullet points when it improves clarity.`;
 
     const chatModel = getChatModel();
     const result = await streamText({
       model: chatModel,
       system:
-        "あなたは Supadocs のドキュメントに基づいて回答する日本語のアシスタントです。提供されたコンテキスト以外の情報は推測せず、わからない場合はその旨を伝えてください。",
+        "You are an assistant that answers questions about the Supadocs documentation. Only use the supplied context, and say you do not know if the answer is not available.",
       prompt,
       temperature: 0.2,
     });
