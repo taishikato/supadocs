@@ -4,7 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import useSWR, { useSWRConfig } from "swr";
+import useSWR from "swr";
 // import { unstable_serialize } from "swr/infinite";
 // import { ChatHeader } from "@/components/chat-header";
 import {
@@ -89,9 +89,9 @@ export function Chat({
     }),
     onData: (dataPart) => {
       setDataStream((ds) => (ds ? [...ds, dataPart] : []));
-      if (dataPart.type === "data-usage") {
-        setUsage(dataPart.data);
-      }
+      // if (dataPart.type === "data-usage") {
+      //   setUsage(dataPart.data);
+      // }
     },
     // onFinish: () => {
     //   mutate(unstable_serialize(getChatHistoryPaginationKey));
