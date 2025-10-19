@@ -119,8 +119,6 @@ export function Chat({
 
   useEffect(() => {
     if (query && !hasAppendedQuery) {
-      console.log("here?");
-
       sendMessage({
         role: "user" as const,
         parts: [{ type: "text", text: query }],
