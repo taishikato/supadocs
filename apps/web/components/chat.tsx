@@ -1,7 +1,6 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
@@ -71,21 +70,20 @@ export function Chat({
     messages: initialMessages,
     experimental_throttle: 100,
     generateId: generateUUID,
-    transport: new DefaultChatTransport({
-      api: "/chat/api/chat",
-      fetch: fetchWithErrorHandlers,
-      prepareSendMessagesRequest(request) {
-        return {
-          body: {
-            id: request.id,
-            message: request.messages.at(-1),
-            selectedChatModel: currentModelIdRef.current,
-            selectedVisibilityType: "public",
-            ...request.body,
-          },
-        };
-      },
-    }),
+    // api: "/api/chat",
+    // transport: new DefaultChatTransport({
+    //   api: "/api/chat",
+    //   fetch: fetchWithErrorHandlers,
+    //   prepareSendMessagesRequest(request) {
+    //     return {
+    //       body: {
+    //         id: request.id,
+    //         message: input,
+    //         ...request.body,
+    //       },
+    //     };
+    //   },
+    // }),
     onData: (dataPart) => {
       setDataStream((ds) => (ds ? [...ds, dataPart] : []));
       // if (dataPart.type === "data-usage") {

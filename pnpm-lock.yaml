@@ -151,6 +151,9 @@ importers:
 
   packages/core:
     dependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.74.0
+        version: 2.74.0
       zod:
         specifier: ^3.25.76
         version: 3.25.76

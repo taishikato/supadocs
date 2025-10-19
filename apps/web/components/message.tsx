@@ -109,15 +109,15 @@ const PurePreviewMessage = ({
             const { type } = part;
             const key = `message-${message.id}-part-${index}`;
 
-            if (type === "reasoning" && part.text?.trim().length > 0) {
-              return (
-                <MessageReasoning
-                  isLoading={isLoading}
-                  key={key}
-                  reasoning={part.text}
-                />
-              );
-            }
+            // if (type === "reasoning" && part.text?.trim().length > 0) {
+            //   return (
+            //     <MessageReasoning
+            //       isLoading={isLoading}
+            //       key={key}
+            //       reasoning={part.text}
+            //     />
+            //   );
+            // }
 
             if (type === "text") {
               if (mode === "view") {
@@ -184,6 +184,15 @@ const PurePreviewMessage = ({
             //     </Tool>
             //   );
             // }
+
+            if (type === "tool-getInformation") {
+              return (
+                <div key={key}>
+                  call{part.state === "output-available" ? "ed" : "ing"} tool:{" "}
+                  {part.type}
+                </div>
+              );
+            }
 
             if (type === "tool-createDocument") {
               const { toolCallId } = part;
