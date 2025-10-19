@@ -1,0 +1,71 @@
+---
+title: Supadocs Overview
+description: Understand the mission, architecture, and tooling that power Supadocs
+---
+
+# Supadocs Overview
+
+Supadocs is an AI-enabled documentation template that combines Next.js, Supabase, and a pnpm/TurboRepo monorepo. The goal is simple: ship project docs that already include Retrieval-Augmented Generation (RAG) search and chat so teams can deliver helpful answers from day one.
+
+## Why Supadocs
+
+- Ship an opinionated docs-as-code workflow that renders Markdown/MDX through the `apps/web` Next.js app.
+- Keep semantic search fresh using Supabase pgvector and incremental embedding updates.
+- Offer a streaming chat experience powered by the Vercel AI SDK and OpenAI-compatible models.
+- Share UI components, utilities, and future agent runtimes across projects via `packages/*`.
+- Automate reindexing after every merge by triggering a Supabase Edge Function from GitHub Actions.
+
+## Monorepo Structure
+
+```text
+apps/
+  web/                 # Next.js App Router UI and API routes
+packages/
+  core/                # Shared chunking and embedding helpers
+  ui/                  # shadcn/ui based component library
+  eslint-config/       # Unified linting rules
+  typescript-config/   # Base tsconfig consumed by apps and packages
+supabase/
+  functions/reindex/   # Edge Function for embeddings upsert
+  migrations/          # pgvector schema and helpers
+llm/                   # Product docs, PRDs, and planning notes
+```
+
+This layout enables shared tooling, clean boundaries, and future expansion into dedicated agent packages described in the roadmap.
+
+## Core Requirements
+
+- Node.js 20 or newer
+- pnpm 10 or newer
+- Supabase CLI with Docker for local development
+- Access to an OpenAI-compatible API for embeddings and chat
+
+## Local Setup At A Glance
+
+1. Install dependencies with `pnpm install`.
+2. Copy `.env.example` to `.env.local` and provide Supabase credentials plus model configuration.
+3. Run `supabase start` followed by `supabase migration up` to initialize the local database.
+4. Launch the monorepo dev servers via `pnpm dev` and open `http://localhost:3000`.
+
+Markdown and MDX content stored in `apps/web/content/docs` hot-reloads automatically, keeping the authoring workflow fast and approachable.
+
+## Supabase Edge Function
+
+The `reindex` Edge Function processes GitHub webhook payloads and keeps pgvector embeddings synchronized. Deploy it with `supabase functions deploy reindex`, set the required secrets (`EDGE_FUNCTION_REINDEX_SECRET`, `SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `EMBEDDING_MODEL`), and mirror those values in `.github/workflows/reindex.yml`.
+
+## Development Scripts
+
+- `pnpm dev` — Run the Next.js app and watch builds.
+- `pnpm build` — Execute `turbo build` across all workspaces.
+- `pnpm lint` — Apply the shared ESLint preset everywhere.
+- `pnpm format` — Format TypeScript, MDX, and Markdown via Prettier.
+
+## Looking Ahead
+
+Agent runtimes, tooling abstractions, and Supabase schema automation will land in upcoming packages:
+
+- `packages/agents-core` for task orchestration primitives.
+- `packages/agents-tools` for reusable provider wrappers.
+- `scripts/` for Supabase schema synchronization and operational CLIs.
+
+Refer to `llm/prd.md` and `AGENTS.md` whenever you need the latest product direction and implementation details.
