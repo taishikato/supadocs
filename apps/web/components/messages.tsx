@@ -59,12 +59,12 @@ function PureMessages({
 
   return (
     <div
-      className="overscroll-behavior-contain -webkit-overflow-scrolling-touch flex-1 touch-pan-y overflow-y-scroll"
+      className="relative min-h-0 -webkit-overflow-scrolling-touch flex-1 h-full touch-pan-y overflow-y-auto"
       ref={messagesContainerRef}
       style={{ overflowAnchor: "none" }}
     >
       <Conversation className="mx-auto flex min-w-0 max-w-4xl flex-col gap-4 md:gap-6">
-        <ConversationContent className="flex flex-col gap-4 px-2 py-4 md:gap-6 md:px-4">
+        <ConversationContent className="flex flex-col gap-4 px-2 pt-4 md:gap-6 md:px-4">
           {messages.length === 0 && <Greeting />}
 
           {messages.map((message, index) => (
@@ -102,14 +102,16 @@ function PureMessages({
       </Conversation>
 
       {!isAtBottom && (
-        <button
-          aria-label="Scroll to bottom"
-          className="-translate-x-1/2 absolute bottom-40 left-1/2 z-10 rounded-full border bg-background p-2 shadow-lg transition-colors hover:bg-muted"
-          onClick={() => scrollToBottom("smooth")}
-          type="button"
-        >
-          <ArrowDownIcon className="size-4" />
-        </button>
+        <div className="pointer-events-none sticky bottom-6 z-10 flex justify-center px-4 md:bottom-8 md:px-8">
+          <button
+            aria-label="Scroll to bottom"
+            className="pointer-events-auto rounded-full border bg-background p-2 shadow-lg transition-colors hover:bg-muted"
+            onClick={() => scrollToBottom("smooth")}
+            type="button"
+          >
+            <ArrowDownIcon className="size-4" />
+          </button>
+        </div>
       )}
     </div>
   );

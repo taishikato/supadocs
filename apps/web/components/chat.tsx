@@ -147,7 +147,7 @@ export function Chat({
 
   return (
     <>
-      <div className="overscroll-behavior-contain flex h-full min-w-0 touch-pan-y flex-col">
+      <div className="overscroll-behavior-contain flex h-full min-h-0 min-w-0 touch-pan-y flex-col">
         {/* <ChatHeader
           chatId={id}
           isReadonly={isReadonly}

@@ -37,7 +37,7 @@ export function ChatModal({ initialChatModel }: ChatModalProps) {
         <Button variant="outline">Try the Chat</Button>
       </DialogTrigger>
       <DialogOverlay className="backdrop-blur-md" />
-      <DialogContent className="bg-transparent border-0 shadow-none focus-visible:outline-none h-dvh">
+      <DialogContent className="flex flex-col bg-transparent border-0 shadow-none focus-visible:outline-none h-dvh">
         <DialogTitle>Supadocs</DialogTitle>
         <DataStreamProvider key={chatId}>
           <Chat
