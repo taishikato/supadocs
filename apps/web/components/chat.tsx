@@ -3,9 +3,6 @@
 import { useChat } from "@ai-sdk/react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import useSWR from "swr";
-// import { unstable_serialize } from "swr/infinite";
-// import { ChatHeader } from "@/components/chat-header";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,18 +14,13 @@ import {
   AlertDialogTitle,
 } from "@workspace/ui/components/alert-dialog";
 import { useAutoResume } from "@/hooks/use-auto-resume";
-// import { useChatVisibility } from "@/hooks/use-chat-visibility";
-import type { Vote } from "@/lib/db/schema";
 import { ChatSDKError } from "@/lib/errors";
 import type { Attachment, ChatMessage } from "@/lib/types";
-import type { AppUsage } from "@/lib/usage";
-import { fetcher, fetchWithErrorHandlers, generateUUID } from "@/lib/utils";
+import { generateUUID } from "@/lib/utils";
 import { useDataStream } from "./data-stream-provider";
 import { Messages } from "./messages";
 import { MultimodalInput } from "./multimodal-input";
-// import { getChatHistoryPaginationKey } from "./sidebar-history";
 import { toast } from "./toast";
-// import type { VisibilityType } from "./visibility-selector";
 
 export function Chat({
   id,
@@ -36,19 +28,16 @@ export function Chat({
   initialChatModel,
   isReadonly,
   autoResume,
-  initialLastContext,
 }: {
   id: string;
   initialMessages: ChatMessage[];
   initialChatModel: string;
   isReadonly: boolean;
   autoResume: boolean;
-  initialLastContext?: AppUsage;
 }) {
   const { setDataStream } = useDataStream();
 
   const [input, setInput] = useState<string>("");
-  const [usage, setUsage] = useState<AppUsage | undefined>(initialLastContext);
   const [showCreditCardAlert, setShowCreditCardAlert] = useState(false);
   const [currentModelId, setCurrentModelId] = useState(initialChatModel);
   const currentModelIdRef = useRef(currentModelId);
@@ -57,58 +46,31 @@ export function Chat({
     currentModelIdRef.current = currentModelId;
   }, [currentModelId]);
 
-  const {
-    messages,
-    setMessages,
-    sendMessage,
-    status,
-    stop,
-    regenerate,
-    resumeStream,
-  } = useChat<ChatMessage>({
-    id,
-    messages: initialMessages,
-    experimental_throttle: 100,
-    generateId: generateUUID,
-    // api: "/api/chat",
-    // transport: new DefaultChatTransport({
-    //   api: "/api/chat",
-    //   fetch: fetchWithErrorHandlers,
-    //   prepareSendMessagesRequest(request) {
-    //     return {
-    //       body: {
-    //         id: request.id,
-    //         message: input,
-    //         ...request.body,
-    //       },
-    //     };
-    //   },
-    // }),
-    onData: (dataPart) => {
-      setDataStream((ds) => (ds ? [...ds, dataPart] : []));
-      // if (dataPart.type === "data-usage") {
-      //   setUsage(dataPart.data);
-      // }
-    },
-    // onFinish: () => {
-    //   mutate(unstable_serialize(getChatHistoryPaginationKey));
-    // },
-    onError: (error) => {
-      if (error instanceof ChatSDKError) {
-        // Check if it's a credit card error
-        if (
-          error.message?.includes("AI Gateway requires a valid credit card")
-        ) {
-          setShowCreditCardAlert(true);
-        } else {
-          toast({
-            type: "error",
-            description: error.message,
-          });
+  const { messages, setMessages, sendMessage, status, stop, resumeStream } =
+    useChat<ChatMessage>({
+      id,
+      messages: initialMessages,
+      experimental_throttle: 100,
+      generateId: generateUUID,
+      onData: (dataPart) => {
+        setDataStream((ds) => (ds ? [...ds, dataPart] : []));
+      },
+      onError: (error) => {
+        if (error instanceof ChatSDKError) {
+          // Check if it's a credit card error
+          if (
+            error.message?.includes("AI Gateway requires a valid credit card")
+          ) {
+            setShowCreditCardAlert(true);
+          } else {
+            toast({
+              type: "error",
+              description: error.message,
+            });
+          }
         }
-      }
-    },
-  });
+      },
+    });
 
   const searchParams = useSearchParams();
   const query = searchParams.get("query");
@@ -127,11 +89,6 @@ export function Chat({
     }
   }, [query, sendMessage, hasAppendedQuery, id]);
 
-  const { data: votes } = useSWR<Vote[]>(
-    messages.length >= 2 ? `/api/vote?chatId=${id}` : null,
-    fetcher
-  );
-
   const [attachments, setAttachments] = useState<Attachment[]>([]);
 
   useAutoResume({
@@ -144,22 +101,7 @@ export function Chat({
   return (
     <>
       <div className="overscroll-behavior-contain flex h-full min-h-0 min-w-0 touch-pan-y flex-col">
-        {/* <ChatHeader
-          chatId={id}
-          isReadonly={isReadonly}
-          selectedVisibilityType={initialVisibilityType}
-        /> */}
-
-        <Messages
-          chatId={id}
-          isReadonly={isReadonly}
-          messages={messages}
-          regenerate={regenerate}
-          selectedModelId={initialChatModel}
-          setMessages={setMessages}
-          status={status}
-          votes={votes}
-        />
+        <Messages isReadonly={isReadonly} messages={messages} status={status} />
 
         <div className="z-1 mx-auto mt-auto flex w-full max-w-4xl gap-2 border-t-0 px-2 pb-3 md:px-4 md:pb-4">
           {!isReadonly && (
