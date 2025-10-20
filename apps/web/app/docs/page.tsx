@@ -20,7 +20,7 @@ export default async function DocsIndexPage() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <SidebarTrigger />
+        <SidebarTrigger className="m-2" />
         <div className="mx-auto max-w-3xl px-6 py-12">
           <h1 className="text-3xl font-bold">Documentation</h1>
           <p className="mt-4 text-muted-foreground">

@@ -5,6 +5,8 @@ import {
   Sidebar,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@workspace/ui/components/sidebar";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -12,13 +14,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar {...props} className="group-data-[side=left]:border-r-0">
       <SidebarHeader>
         <SidebarMenu>
-          <div>
-            <Link className="flex flex-row items-center gap-3" href="/">
-              <span className="cursor-pointer rounded-md px-2 font-semibold text-lg hover:bg-muted">
-                Supadocs
-              </span>
-            </Link>
-          </div>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <Link className="flex flex-row items-center gap-3" href="/">
+                <span className="cursor-pointer rounded-md px-2 font-semibold text-lg hover:bg-muted">
+                  Supadocs
+                </span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
     </Sidebar>
