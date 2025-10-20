@@ -33,18 +33,17 @@
 - [x] **P1**: `/api/chat` を AI SDK ベースにリファクタリング（トークン管理含む）
 - [x] **P1**: Markdownエクスポート（各ページDL）
 
-## F. セキュリティ/運用
-- [ ] **P0**: Edge Function の署名検証（`x-edge-secret` or HMAC）
-- [ ] **P1**: 低頻度レート制限/簡易CORS
-- [ ] **P1**: ログ/監視（Edge/Next/Supabaseの基本的な観測手順）
-
-## G. DX/ドキュメント
+## F. DX/ドキュメント
 - [x] **P0**: `.env.example` 整備（URL/Keys、モデル名）
 - [x] **P0**: README（セットアップ、CI、Edgeデプロイ手順）
 - [x] **P1**: サンプルDocs（3–5ページのMDXと内部リンク）
 
+## G. デフォルトUI
+- [ ] **P0**: `/docs`配下の基本的なレイアウト(sidebar + main content)
+- [x] **P0**: ダミーコンテンツ配置
+
 ## H. 完了判定（DoD）
 - [x] **P0**: Next.jsでMDXが表示できる
 - [ ] **P0**: push/PRで**差分だけ**埋め込みが更新される
-- [ ] **P0**: チャットUIが文脈＋出典付きで回答する（RAG）
+- [x] **P0**: チャットUIが文脈＋出典付きで回答する（RAG）
 - [ ] **P0**: OSSとして公開・READMEで再現手順が明記
