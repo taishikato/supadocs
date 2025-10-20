@@ -166,13 +166,18 @@ const PurePreviewMessage = ({
             </div>
           ) : null}
 
-          {!isReadonly && (
+          <div
+            className={cn("transition-opacity", {
+              "opacity-0 pointer-events-none group-hover/message:opacity-100 group-hover/message:pointer-events-auto":
+                message.role === "user",
+            })}
+          >
             <MessageActions
               isLoading={isLoading}
               key={`action-${message.id}`}
               message={message}
             />
-          )}
+          </div>
         </div>
       </div>
     </motion.div>
