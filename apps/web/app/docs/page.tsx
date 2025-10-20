@@ -1,5 +1,6 @@
-import Link from "next/link";
-import { listDocSlugs, getDocBySlug } from "@/lib/docs";
+import { notFound } from "next/navigation";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import { getDocBySlug } from "@/lib/docs";
 import {
   SidebarInset,
   SidebarProvider,
@@ -8,46 +9,33 @@ import {
 import { AppSidebar } from "@/components/app-sidebar";
 
 export default async function DocsIndexPage() {
-  const slugs = await listDocSlugs();
-  const docs = await Promise.all(
-    slugs.map(async (slug) => {
-      const doc = await getDocBySlug(slug);
-      return doc;
-    })
-  );
+  const doc = await getDocBySlug(["index"]);
+
+  if (!doc) {
+    notFound();
+  }
 
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <SidebarTrigger className="m-2" />
-        <div className="mx-auto max-w-3xl px-6 py-12">
-          <h1 className="text-3xl font-bold">Documentation</h1>
-          <p className="mt-4 text-muted-foreground">
-            Browse the latest Supadocs documentation.
-          </p>
-
-          <ul className="mt-8 space-y-6">
-            {docs
-              .filter((doc) => doc !== null)
-              .map((doc) => (
-                <li key={doc!.slug.join("/")}>
-                  <Link
-                    href={`/docs/${doc!.slug.join("/")}`}
-                    className="group block rounded-lg border border-border p-4 transition hover:border-primary"
-                  >
-                    <h2 className="text-xl font-semibold group-hover:text-primary">
-                      {doc!.title}
-                    </h2>
-                    {doc!.description ? (
-                      <p className="mt-2 text-muted-foreground">
-                        {doc!.description}
-                      </p>
-                    ) : null}
-                  </Link>
-                </li>
-              ))}
-          </ul>
+        <div className="relative flex h-full flex-col px-4 pt-4 sm:px-6 lg:px-8">
+          <SidebarTrigger />
+          <main className="mt-10">
+            <article className="flex h-full flex-col pb-10">
+              <header className="mb-8">
+                <h1 className="text-4xl font-bold">{doc.title}</h1>
+                {doc.description && (
+                  <p className="mt-2 text-lg text-muted-foreground">
+                    {doc.description}
+                  </p>
+                )}
+              </header>
+              <div className="prose prose-neutral dark:prose-invert">
+                <MDXRemote source={doc.content} />
+              </div>
+            </article>
+          </main>
         </div>
       </SidebarInset>
     </SidebarProvider>
