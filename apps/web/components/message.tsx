@@ -2,8 +2,8 @@
 
 import equal from "fast-deep-equal";
 import { motion } from "framer-motion";
-import { memo, useState } from "react";
-import type { ChatMessage } from "@/lib/types";
+import { memo, useMemo, useState } from "react";
+import type { ChatMessage, Citation } from "@/lib/types";
 import { cn, sanitizeText } from "@/lib/utils";
 import { useDataStream } from "./data-stream-provider";
 import { MessageContent } from "./elements/message";
@@ -25,6 +25,36 @@ const PurePreviewMessage = ({
   const [mode, setMode] = useState<"view" | "edit">("view");
 
   useDataStream();
+
+  const citations = useMemo(() => {
+    if (message.role !== "assistant") {
+      return [] as Citation[];
+    }
+
+    const raw = message.metadata?.citations;
+    if (!Array.isArray(raw)) {
+      return [] as Citation[];
+    }
+
+    return raw
+      .map((citation) => {
+        if (!citation?.id) return null;
+
+        const href = citation.href?.trim();
+        const isSafeHref =
+          typeof href === "string" &&
+          (href.startsWith("http://") ||
+            href.startsWith("https://") ||
+            href.startsWith("/"));
+
+        return {
+          id: citation.id,
+          title: citation.title?.trim() ?? undefined,
+          href: isSafeHref ? href : undefined,
+        } satisfies Citation;
+      })
+      .filter(Boolean) as Citation[];
+  }, [message.metadata?.citations, message.role]);
 
   return (
     <motion.div
@@ -102,6 +132,39 @@ const PurePreviewMessage = ({
 
             return null;
           })}
+
+          {message.role === "assistant" && citations.length > 0 ? (
+            <div className="mt-3 text-sm text-muted-foreground">
+              <div className="font-semibold text-foreground">Sources</div>
+              <ul className="mt-2 space-y-1">
+                {citations.map((citation) => {
+                  const label = sanitizeText(
+                    citation.title ?? citation.href ?? citation.id
+                  );
+
+                  return (
+                    <li className="flex gap-2" key={citation.id}>
+                      <span className="font-mono text-xs text-muted-foreground">
+                        [{citation.id}]
+                      </span>
+                      {citation.href ? (
+                        <a
+                          className="truncate text-foreground underline"
+                          href={citation.href}
+                          rel="noreferrer noopener"
+                          target="_blank"
+                        >
+                          {label}
+                        </a>
+                      ) : (
+                        <span className="truncate">{label}</span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ) : null}
 
           {!isReadonly && (
             <MessageActions

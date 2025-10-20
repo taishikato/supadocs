@@ -15,7 +15,11 @@ import {
 } from "@workspace/ui/components/alert-dialog";
 import { useAutoResume } from "@/hooks/use-auto-resume";
 import { ChatSDKError } from "@/lib/errors";
-import type { Attachment, ChatMessage } from "@/lib/types";
+import {
+  messageMetadataSchema,
+  type Attachment,
+  type ChatMessage,
+} from "@/lib/types";
 import { generateUUID } from "@/lib/utils";
 import { useDataStream } from "./data-stream-provider";
 import { Messages } from "./messages";
@@ -51,6 +55,7 @@ export function Chat({
       id,
       messages: initialMessages,
       experimental_throttle: 100,
+      messageMetadataSchema,
       generateId: generateUUID,
       onData: (dataPart) => {
         setDataStream((ds) => (ds ? [...ds, dataPart] : []));

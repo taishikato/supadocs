@@ -21,6 +21,35 @@ type MatchDocumentChunksArgs = {
   similarity_threshold?: number;
 };
 
+const normalizeDocPath = (docPath: string): string => {
+  return docPath
+    .replace(/\\/g, "/")
+    .replace(/^(?:apps\/web\/)?content\/docs\//, "");
+};
+
+const buildDocsUrl = (docPath: string): string => {
+  const withoutPrefix = normalizeDocPath(docPath);
+  const normalised = withoutPrefix.replace(/\.(md|mdx)$/i, "");
+
+  if (!normalised) {
+    return "/docs";
+  }
+
+  return `/docs/${normalised}`;
+};
+
+export type RelevantContent = {
+  id: string;
+  docPath: string;
+  docUrl: string;
+  chunkIndex: number;
+  content: string;
+  contentHash: string;
+  metadata: Record<string, unknown> | null;
+  similarity: number;
+  updatedAt: string;
+};
+
 let cachedSupabaseClient: SupabaseClient | null = null;
 
 const getSupabaseClient = (): SupabaseClient => {
@@ -79,14 +108,13 @@ export const generateEmbedding = async (value: string): Promise<number[]> => {
   return embedding;
 };
 
-export const findRelevantContent = async (userQuery: string) => {
+export const findRelevantContent = async (
+  userQuery: string,
+): Promise<RelevantContent[]> => {
   const supabase = getSupabaseClient();
   const queryEmbedding = await generateEmbedding(userQuery);
 
-  const { data, error } = await supabase.rpc<
-    MatchDocumentChunk[],
-    MatchDocumentChunksArgs
-  >(
+  const { data, error } = await supabase.rpc<MatchDocumentChunk[]>(
     "match_document_chunks",
     {
       query_embedding: queryEmbedding,
@@ -104,6 +132,7 @@ export const findRelevantContent = async (userQuery: string) => {
   return data.map((chunk) => ({
     id: chunk.id,
     docPath: chunk.doc_path,
+    docUrl: buildDocsUrl(chunk.doc_path),
     chunkIndex: chunk.chunk_index,
     content: chunk.content,
     contentHash: chunk.content_hash,
