@@ -16,11 +16,11 @@ import {
 
 const docLinks = [
   { title: "Docs Introduction", href: "/docs" },
-  { title: "Supadocs Overview", href: "/docs/supadocs-overview" },
   { title: "Getting Started", href: "/docs/getting-started" },
-  { title: "Chat Pipeline", href: "/docs/chat" },
-  { title: "Reindex Architecture", href: "/docs/reindex-architecture" },
-  { title: "Agent Runtime Preview", href: "/docs/agent-runtime-preview" },
+  {
+    title: "Deep Nesting Example",
+    href: "/docs/nesting/deep-nesting-example",
+  },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
