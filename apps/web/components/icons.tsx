@@ -785,23 +785,6 @@ export const SidebarLeftIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
-export const PlusIcon = ({ size = 16 }: { size?: number }) => (
-  <svg
-    height={size}
-    strokeLinejoin="round"
-    style={{ color: "currentcolor" }}
-    viewBox="0 0 16 16"
-    width={size}
-  >
-    <path
-      clipRule="evenodd"
-      d="M 8.75,1 H7.25 V7.25 H1.5 V8.75 H7.25 V15 H8.75 V8.75 H14.5 V7.25 H8.75 V1.75 Z"
-      fill="currentColor"
-      fillRule="evenodd"
-    />
-  </svg>
-);
-
 export const CopyIcon = ({ size = 16 }: { size?: number }) => (
   <svg
     height={size}
