@@ -1,0 +1,20 @@
+---
+title: Deep Nesting Example
+description: Demonstrates how Supadocs renders and routes deeply nested documentation pages.
+---
+
+This page hangs out at `content/docs/nesting/deep-nesting-example.mdx` so we can show how Supadocs handles multi-level slugs without breaking a sweat.
+
+## Why this path matters
+
+- Gives us a quick way to watch the catch-all route `app/docs/[[...slug]]/page.tsx` do its thing.
+- Lets us double-check that the sidebar and breadcrumb trail stay accurate as we go deeper.
+- Offers a roomy sandbox for poking at long-path link issues before anything ships.
+
+## Suggested verification steps
+
+1. Swing by `/docs/nesting/deep-nesting-example` in the preview build.
+2. Make sure the breadcrumb trail calls out every parent segment like you’d expect.
+3. Kick off the Collector agent and confirm it logs this page with the full nested slug.
+
+> Keep this page handy as a friendly canary whenever you tweak routing or the crawler.

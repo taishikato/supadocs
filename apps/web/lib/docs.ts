@@ -23,6 +23,7 @@ export async function listDocSlugs(): Promise<string[][]> {
 
 export async function getDocBySlug(slug: string[]): Promise<DocEntry | null> {
   const filePath = path.join(DOCS_DIR, `${slug.join("/")}.mdx`);
+
   try {
     const raw = await readFile(filePath, "utf8");
     const frontmatterMatch = raw.match(/^---\n([\s\S]+?)\n---\n?/);

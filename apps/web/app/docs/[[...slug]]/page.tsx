@@ -21,7 +21,6 @@ function normalizeSlug(input?: string[]): string[] {
 
 export default async function DocPage(props: PageProps) {
   const params = await props.params;
-
   const slug = normalizeSlug(params.slug);
 
   const doc = await getDocBySlug(slug);
