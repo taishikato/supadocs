@@ -1,8 +1,6 @@
-import { cookies } from "next/headers";
 import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
-
 import { ChatModal } from "@/components/chat-modal";
 
 const featureHighlights = [
@@ -41,11 +39,7 @@ const workflowSteps = [
   },
 ];
 
-export default async function Page() {
-  const cookieStore = await cookies();
-  const initialChatModel =
-    cookieStore.get("chat-model")?.value ?? "gpt-4o-mini-2024-07-18";
-
+export default function Page() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-background via-background to-muted/30 px-6 py-32">
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 mx-auto h-64 w-full max-w-4xl rounded-full bg-gradient-to-br from-primary/10 via-primary/5 to-transparent blur-3xl" />
@@ -68,7 +62,7 @@ export default async function Page() {
               <Button asChild size="lg">
                 <Link href="/docs">View Documentation</Link>
               </Button>
-              <ChatModal initialChatModel={initialChatModel} />
+              <ChatModal initialChatModel="gpt-4o-mini-2024-07-18" />
             </div>
           </div>
           <div className="rounded-3xl border border-border/70 bg-card/80 p-8 shadow-lg backdrop-blur">

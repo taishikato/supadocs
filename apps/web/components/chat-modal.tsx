@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Chat } from "@/components/chat";
@@ -17,9 +17,10 @@ import {
 
 type ChatModalProps = {
   initialChatModel: string;
+  trigger?: ReactNode;
 };
 
-export function ChatModal({ initialChatModel }: ChatModalProps) {
+export function ChatModal({ initialChatModel, trigger }: ChatModalProps) {
   const [open, setOpen] = useState(false);
   const [chatId, setChatId] = useState(() => generateUUID());
 
@@ -34,7 +35,7 @@ export function ChatModal({ initialChatModel }: ChatModalProps) {
       open={open}
     >
       <DialogTrigger asChild>
-        <Button variant="outline">Try the Chat</Button>
+        {trigger ?? <Button variant="outline">Try the Chat</Button>}
       </DialogTrigger>
       <DialogOverlay className="backdrop-blur-md" />
       <DialogContent className="flex flex-col bg-transparent border-0 shadow-none focus-visible:outline-none h-dvh">
