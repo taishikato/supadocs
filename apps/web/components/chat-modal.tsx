@@ -42,7 +42,6 @@ export function ChatModal({ initialChatModel, trigger }: ChatModalProps) {
         <DialogTitle>Supadocs</DialogTitle>
         <DataStreamProvider key={chatId}>
           <Chat
-            autoResume={false}
             id={chatId}
             initialChatModel={initialChatModel}
             initialMessages={[]}
