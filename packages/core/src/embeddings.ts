@@ -19,17 +19,16 @@ let cachedSupabaseClient: SupabaseClient<any, any, "docs", any, any> | null =
 const getSupabaseClient = () => {
   if (cachedSupabaseClient) return cachedSupabaseClient;
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SERVICE_ROLE_KEY ??
-    process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url) {
-    throw new Error("NEXT_PUBLIC_SUPABASE_URL must be set to query embeddings");
+    throw new Error("SUPABASE_URL must be set to query embeddings");
   }
 
   if (!serviceRoleKey) {
     throw new Error(
-      "SERVICE_ROLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY) must be set to query embeddings",
+      "SUPABASE_SERVICE_ROLE_KEY must be set to query embeddings",
     );
   }
 
