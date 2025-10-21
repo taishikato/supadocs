@@ -3,13 +3,11 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import {
   ChevronDownIcon,
-  AlertTriangleIcon,
-  CheckIcon,
   Download,
-  UserRoundXIcon,
-  ShareIcon,
   CopyIcon,
   TrashIcon,
+  ExternalLink,
+  Sparkles,
 } from "lucide-react";
 import { listDocSlugs, getDocBySlug } from "@/lib/docs";
 import { CopyDocButton } from "./copy-doc-button";
@@ -38,6 +36,29 @@ function normalizeSlug(input?: string[]): string[] {
   return normalized;
 }
 
+function buildChatGptHref(slug: string[]): string {
+  const docUrl = resolveDocUrl(slug);
+  const chatGptPrompt = `Read from this URL: ${docUrl} and explain it to me.`;
+  return `https://chatgpt.com/?prompt=${encodeURIComponent(chatGptPrompt)}`;
+}
+
+function buildClaudeHref(slug: string[]): string {
+  const docUrl = resolveDocUrl(slug);
+  const claudePrompt = `Read from this URL: ${docUrl} and explain it to me.`;
+  return `https://claude.ai/new?q=${encodeURIComponent(claudePrompt)}`;
+}
+
+function resolveDocUrl(slug: string[]): string {
+  const slugPathname =
+    slug.length === 1 && slug[0] === "index" ? "" : slug.join("/");
+
+  const docPath = slugPathname ? `/docs/${slugPathname}` : "/docs";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const normalizedSiteUrl = siteUrl.replace(/\/$/, "");
+
+  return `${normalizedSiteUrl}${docPath}`;
+}
+
 export default async function DocPage(props: PageProps) {
   const params = await props.params;
   const slug = normalizeSlug(params.slug);
@@ -46,6 +67,9 @@ export default async function DocPage(props: PageProps) {
   if (!doc) {
     notFound();
   }
+
+  const chatGptHref = buildChatGptHref(doc.slug);
+  const claudeHref = buildClaudeHref(doc.slug);
 
   const downloadHref = `/api/docs/download/${doc.slug
     .map((segment) => encodeURIComponent(segment))
@@ -78,21 +102,25 @@ export default async function DocPage(props: PageProps) {
                         <span>Download Markdown</span>
                       </a>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <CheckIcon />
-                      Mark as Read
+                    <DropdownMenuItem asChild>
+                      <a
+                        href={chatGptHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink className="size-4" aria-hidden="true" />
+                        <span>Open in ChatGPT</span>
+                      </a>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <AlertTriangleIcon />
-                      Report Conversation
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <UserRoundXIcon />
-                      Block User
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <ShareIcon />
-                      Share Conversation
+                    <DropdownMenuItem asChild>
+                      <a
+                        href={claudeHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Sparkles className="size-4" aria-hidden="true" />
+                        <span>Open in Claude</span>
+                      </a>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <CopyIcon />
