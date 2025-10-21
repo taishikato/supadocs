@@ -85,6 +85,8 @@ export const findRelevantContent = async (
     },
   );
 
+  console.log({ pageSections, error });
+
   if (error) {
     throw new Error(`Failed to retrieve relevant content: ${error.message}`);
   }
