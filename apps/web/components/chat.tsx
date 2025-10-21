@@ -14,11 +14,7 @@ import {
   AlertDialogTitle,
 } from "@workspace/ui/components/alert-dialog";
 import { ChatSDKError } from "@/lib/errors";
-import {
-  messageMetadataSchema,
-  type Attachment,
-  type ChatMessage,
-} from "@/lib/types";
+import { messageMetadataSchema, type ChatMessage } from "@/lib/types";
 import { generateUUID } from "@/lib/utils";
 import { useDataStream } from "./data-stream-provider";
 import { Messages } from "./messages";
@@ -93,8 +89,6 @@ export function Chat({
     }
   }, [query, sendMessage, hasAppendedQuery, id]);
 
-  const [attachments, setAttachments] = useState<Attachment[]>([]);
-
   return (
     <>
       <div className="overscroll-behavior-contain flex h-full min-h-0 min-w-0 touch-pan-y flex-col">
@@ -103,11 +97,9 @@ export function Chat({
         <div className="z-1 mx-auto mt-auto flex w-full max-w-4xl gap-2 border-t-0 px-2 pb-3 md:px-4 md:pb-4">
           {!isReadonly && (
             <MultimodalInput
-              attachments={attachments}
               chatId={id}
               input={input}
               sendMessage={sendMessage}
-              setAttachments={setAttachments}
               setInput={setInput}
               setMessages={setMessages}
               status={status}

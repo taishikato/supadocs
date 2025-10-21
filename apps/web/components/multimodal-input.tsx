@@ -16,7 +16,7 @@ import { useLocalStorage, useWindowSize } from "usehooks-ts";
 // import { saveChatModelAsCookie } from "@/app/(chat)/actions";
 // import { chatModels } from "@/lib/ai/models";
 // import { myProvider } from "@/lib/ai/providers";
-import type { Attachment, ChatMessage } from "@/lib/types";
+import type { ChatMessage } from "@/lib/types";
 import { cn } from "@/lib/utils";
 // import { Context } from "./elements/context";
 import {
@@ -34,8 +34,6 @@ function PureMultimodalInput({
   setInput,
   status,
   stop,
-  attachments,
-  setAttachments,
   setMessages,
   sendMessage,
   className,
@@ -45,8 +43,6 @@ function PureMultimodalInput({
   setInput: Dispatch<SetStateAction<string>>;
   status: UseChatHelpers<ChatMessage>["status"];
   stop: () => void;
-  attachments: Attachment[];
-  setAttachments: Dispatch<SetStateAction<Attachment[]>>;
   setMessages: UseChatHelpers<ChatMessage>["setMessages"];
   sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
   className?: string;
@@ -103,12 +99,6 @@ function PureMultimodalInput({
     sendMessage({
       role: "user",
       parts: [
-        ...attachments.map((attachment) => ({
-          type: "file" as const,
-          url: attachment.url,
-          name: attachment.name,
-          mediaType: attachment.contentType,
-        })),
         {
           type: "text",
           text: input,
@@ -116,7 +106,6 @@ function PureMultimodalInput({
       ],
     });
 
-    setAttachments([]);
     setLocalStorageInput("");
     resetHeight();
     setInput("");
@@ -127,9 +116,7 @@ function PureMultimodalInput({
   }, [
     input,
     setInput,
-    attachments,
     sendMessage,
-    setAttachments,
     setLocalStorageInput,
     width,
     chatId,
