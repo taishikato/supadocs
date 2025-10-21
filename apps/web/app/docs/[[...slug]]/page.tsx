@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { ClaudeAIIcon, MarkdownIcon, OpenAIIcon } from "@/components/icons";
+import { LogoClaudeAI, LogoOpenAI, MarkdownIcon } from "@/components/icons";
 
 type PageProps = {
   params: Promise<{ slug: string[] }>;
@@ -101,7 +101,7 @@ export default async function DocPage(props: PageProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <OpenAIIcon className="size-4" aria-hidden="true" />
+                        <LogoOpenAI aria-hidden="true" />
                         <span>Open in ChatGPT</span>
                       </a>
                     </DropdownMenuItem>
@@ -111,7 +111,7 @@ export default async function DocPage(props: PageProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <ClaudeAIIcon className="size-4" aria-hidden="true" />
+                        <LogoClaudeAI className="size-4" aria-hidden="true" />
                         <span>Open in Claude</span>
                       </a>
                     </DropdownMenuItem>
