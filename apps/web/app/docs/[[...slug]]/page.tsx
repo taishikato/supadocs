@@ -1,9 +1,28 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { Download } from "lucide-react";
+import {
+  ChevronDownIcon,
+  AlertTriangleIcon,
+  CheckIcon,
+  Download,
+  VolumeOffIcon,
+  UserRoundXIcon,
+  ShareIcon,
+  CopyIcon,
+  TrashIcon,
+} from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { listDocSlugs, getDocBySlug } from "@/lib/docs";
+import { ButtonGroup } from "@workspace/ui/components/button-group";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu";
 
 type PageProps = {
   params: Promise<{ slug: string[] }>;
@@ -49,6 +68,52 @@ export default async function DocPage(props: PageProps) {
                 <span>Download Markdown</span>
               </a>
             </Button>
+
+            <ButtonGroup>
+              <Button variant="outline">Follow</Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="!pl-2">
+                    <ChevronDownIcon />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="[--radius:1rem]">
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      <VolumeOffIcon />
+                      Mute Conversation
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <CheckIcon />
+                      Mark as Read
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <AlertTriangleIcon />
+                      Report Conversation
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <UserRoundXIcon />
+                      Block User
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <ShareIcon />
+                      Share Conversation
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <CopyIcon />
+                      Copy Conversation
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem variant="destructive">
+                      <TrashIcon />
+                      Delete Conversation
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </ButtonGroup>
           </div>
         </header>
         <div className="prose prose-neutral dark:prose-invert">
