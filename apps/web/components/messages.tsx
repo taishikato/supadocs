@@ -15,7 +15,7 @@ type MessagesProps = {
   isReadonly: boolean;
 };
 
-function PureMessages({ status, messages, isReadonly }: MessagesProps) {
+function PureMessages({ status, messages }: MessagesProps) {
   const {
     containerRef: messagesContainerRef,
     endRef: messagesEndRef,
@@ -57,7 +57,6 @@ function PureMessages({ status, messages, isReadonly }: MessagesProps) {
               isLoading={
                 status === "streaming" && messages.length - 1 === index
               }
-              isReadonly={isReadonly}
               key={message.id}
               message={message}
               requiresScrollPadding={
