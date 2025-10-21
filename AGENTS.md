@@ -35,7 +35,7 @@ Supadocs は pnpm/TurboRepo ベースのモノレポに移行しました。本�
    - `AgentTask`, `AgentResult`, `AgentContext`, `AgentToolInvocation`, `AuditEvent` などを定義。  
    - タスク間の payload を JSON Schema でバリデーションする（Zod を想定）。
 4. **Tools（packages/agents-tools）**  
-   - `model.ts` にプロバイダー抽象化を実装 (`AI_PROVIDER_KEY`, `EMBEDDING_MODEL` を使用)。  
+   - `model.ts` にプロバイダー抽象化を実装（`OPENAI_API_KEY` を使用）。  
    - 検索、フォーマッタ、埋め込み生成など再利用可能な関数を格納。  
    - 将来的に `packages/agents-tools-search`, `packages/agents-tools-format` などの分割も視野。
 5. **Persistence & Audit**  
@@ -55,7 +55,7 @@ Supadocs は pnpm/TurboRepo ベースのモノレポに移行しました。本�
    - `tests/runtime.test.ts` を Vitest or Jest で作成し、ハッピーケース／失敗時のエラーバブル／再試行制御をカバー。  
    - Turbo pipeline に `pnpm test --filter agents-core` を追加。
 3. **Tooling & Provider integration**  
-   - `.env.local`（ルートで共有し Next.js にエクスポート）に `AI_PROVIDER_KEY`, `EMBEDDING_MODEL`, `TOKEN_BUDGET` を追加。  
+   - `.env.local`（ルートで共有し Next.js にエクスポート）に `OPENAI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` を定義。  
    - `packages/agents-tools/src/model.ts` でプロバイダー呼び出しをラップし、最大トークン数を強制。  
    - 将来の差し替えを想定し、プロバイダー設定を `apps/web/app/config/agents.ts` に集約。
 4. **Persistence & schema sync**  

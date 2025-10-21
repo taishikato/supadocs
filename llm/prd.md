@@ -154,7 +154,7 @@ User edits Markdown locally and pushes changes to GitHub.
 * **Scalability:** pgvector handles large-scale embedding search efficiently.
 * **Security:** HMAC signature verification for GitHub → Edge Function calls.
 * **OSS Licensing:** MIT License.
-* **Development Environment:** Node.js 20+, Supabase CLI, GitHub Actions.
+* **Development Environment:** Node.js 20+, Supabase CLI, GitHub Actions, and environment variables (`OPENAI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`).
 
 ---
 

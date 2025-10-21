@@ -34,7 +34,7 @@
 - [x] **P1**: Markdownエクスポート（各ページDL）
 
 ## F. DX/ドキュメント
-- [x] **P0**: `.env.example` 整備（URL/Keys、モデル名）
+- [x] **P0**: `.env.example` 整備（`OPENAI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`）
 - [x] **P0**: README（セットアップ、CI、Edgeデプロイ手順）
 - [x] **P1**: サンプルDocs（3–5ページのMDXと内部リンク）
 

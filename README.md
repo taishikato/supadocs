@@ -40,9 +40,9 @@ llm/                   # Product docs, PRD, and planning notes
    cp .env.example .env.local
    ```
    Required values:
-   - `NEXT_PUBLIC_SUPABASE_URL` and keys from your Supabase project
-   - `OPENAI_API_KEY` (or any API compatible with the OpenAI schema)
-   - `EMBEDDING_MODEL`, `OPENAI_CHAT_MODEL`, and `TOKEN_BUDGET` to control model usage
+   - `OPENAI_API_KEY`
+   - `SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY`
 3. Start Supabase locally:
    ```bash
    supabase start
@@ -64,13 +64,13 @@ The `reindex` Edge Function consumes GitHub webhook payloads and manages pgvecto
 ```bash
 cd supabase
 supabase functions deploy reindex
-supabase secrets set EDGE_FUNCTION_REINDEX_SECRET=your-secret \
-  SERVICE_ROLE_KEY=your-service-role-key \
+supabase secrets set \
   OPENAI_API_KEY=sk-... \
-  EMBEDDING_MODEL=text-embedding-3-large
+  SUPABASE_URL=https://your-project.supabase.co \
+  SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
-Configure GitHub Actions (`.github/workflows/reindex.yml`) with the same `EDGE_FUNCTION_REINDEX_SECRET`, `NEXT_PUBLIC_SUPABASE_URL`, and Supabase service key so the CI workflow can invoke the function.
+Configure GitHub Actions (`.github/workflows/reindex.yml`) with the same `OPENAI_API_KEY`, `SUPABASE_URL`, and `SUPABASE_SERVICE_ROLE_KEY` so the CI workflow can invoke the function.
 
 ## Development Scripts
 - `pnpm dev` – Run the Next.js app and watch mode builds
