@@ -4,40 +4,6 @@ import { openai } from "@ai-sdk/openai";
 
 const embeddingModel = openai.embedding("text-embedding-3-small");
 
-type MatchDocumentChunk = {
-  id: string;
-  doc_path: string;
-  chunk_index: number;
-  content: string;
-  content_hash: string;
-  metadata: Record<string, unknown> | null;
-  updated_at: string;
-  similarity: number;
-};
-
-type MatchDocumentChunksArgs = {
-  query_embedding: number[];
-  match_count?: number;
-  similarity_threshold?: number;
-};
-
-const normalizeDocPath = (docPath: string): string => {
-  return docPath
-    .replace(/\\/g, "/")
-    .replace(/^(?:apps\/web\/)?content\/docs\//, "");
-};
-
-const buildDocsUrl = (docPath: string): string => {
-  const withoutPrefix = normalizeDocPath(docPath);
-  const normalised = withoutPrefix.replace(/\.(md|mdx)$/i, "");
-
-  if (!normalised) {
-    return "/docs";
-  }
-
-  return `/docs/${normalised}`;
-};
-
 export type RelevantContent = {
   id: string;
   docPath: string;
@@ -113,36 +79,21 @@ export const findRelevantContent = async (
   const supabase = getSupabaseClient();
   const queryEmbedding = await generateEmbedding(userQuery);
 
-  const { data, error } = await supabase.rpc<MatchDocumentChunk[]>(
-    // "match_document_chunks",
+  const { data: pageSections, error } = await supabase.rpc<
+    MatchDocumentChunk[]
+  >(
     "match_page_sections",
     {
       embedding: queryEmbedding,
-      match_threshold: 0.5,
+      match_threshold: 0.7,
       match_count: 10,
       min_content_length: 50,
-      // match_count: 4,
-      // similarity_threshold: 0.5,
     },
   );
-
-  // console.log({ data, error });
 
   if (error) {
     throw new Error(`Failed to retrieve relevant content: ${error.message}`);
   }
 
-  if (!data) return [];
-
-  return data.map((chunk) => ({
-    id: chunk.id,
-    docPath: chunk.doc_path,
-    docUrl: buildDocsUrl(chunk.doc_path),
-    chunkIndex: chunk.chunk_index,
-    content: chunk.content,
-    contentHash: chunk.content_hash,
-    metadata: chunk.metadata,
-    similarity: chunk.similarity,
-    updatedAt: chunk.updated_at,
-  }));
+  return pageSections;
 };
