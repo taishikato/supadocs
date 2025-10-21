@@ -32,8 +32,6 @@ export const PromptInput = ({ className, ...props }: PromptInputProps) => (
 );
 
 export type PromptInputTextareaProps = ComponentProps<typeof Textarea> & {
-  minHeight?: number;
-  maxHeight?: number;
   disableAutoResize?: boolean;
   resizeOnNewLinesOnly?: boolean;
 };
@@ -42,8 +40,6 @@ export const PromptInputTextarea = ({
   onChange,
   className,
   placeholder = "What would you like to know?",
-  minHeight = 48,
-  maxHeight = 164,
   disableAutoResize = false,
   resizeOnNewLinesOnly = false,
   ...props
