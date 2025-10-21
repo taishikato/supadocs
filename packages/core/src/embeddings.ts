@@ -5,15 +5,12 @@ import { openai } from "@ai-sdk/openai";
 const embeddingModel = openai.embedding("text-embedding-3-small");
 
 export type RelevantContent = {
-  id: string;
-  docPath: string;
-  docUrl: string;
-  chunkIndex: number;
+  id: number;
+  page_id: number;
+  slug: string;
+  heading: string;
   content: string;
-  contentHash: string;
-  metadata: Record<string, unknown> | null;
   similarity: number;
-  updatedAt: string;
 };
 
 let cachedSupabaseClient: SupabaseClient<any, any, "docs", any, any> | null =
@@ -83,7 +80,7 @@ export const findRelevantContent = async (
     "match_page_sections",
     {
       embedding: queryEmbedding,
-      match_threshold: 0.7,
+      match_threshold: 0.6,
       match_count: 10,
       min_content_length: 50,
     },

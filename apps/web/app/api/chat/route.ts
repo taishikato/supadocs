@@ -38,7 +38,11 @@ export async function POST(req: Request) {
             question,
           );
 
-          return matches;
+          const contextText = matches
+            .map((pageSection) => pageSection.content.trim())
+            .join("\n---\n");
+
+          return `${contextText}\n---\n`;
         },
       }),
     },
