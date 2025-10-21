@@ -15,9 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: supabase/embeddings-generator@v0.0.5 # Update this to the latest version.
+      - uses: taishikato/embeddings-generator@v0.0.6 # Update this to the latest version.
         with:
           supabase-url: 'https://hrxvfvxxmgpglfemqddj.supabase.co' # Update this to your project URL.
           supabase-service-role-key: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           openai-key: ${{ secrets.OPENAI_API_KEY }}
           docs-root-path: 'apps/web/content/docs' # the path to the root of your md(x) files
+          embedding-model: 'text-embedding-3-small'

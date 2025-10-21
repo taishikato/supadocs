@@ -52,27 +52,26 @@ export type RelevantContent = {
 
 let cachedSupabaseClient: SupabaseClient | null = null;
 
-const getSupabaseClient = (): SupabaseClient => {
+const getSupabaseClient = () => {
   if (cachedSupabaseClient) return cachedSupabaseClient;
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SERVICE_ROLE_KEY ??
     process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url) {
     throw new Error("NEXT_PUBLIC_SUPABASE_URL must be set to query embeddings");
   }
 
-  const apiKey = serviceRoleKey ?? anonKey;
-  if (!apiKey) {
+  if (!serviceRoleKey) {
     throw new Error(
       "SERVICE_ROLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY) must be set to query embeddings",
     );
   }
 
-  cachedSupabaseClient = createClient(url, apiKey, {
-    auth: { persistSession: false },
+  // @ts-ignore
+  cachedSupabaseClient = createClient(url, serviceRoleKey, {
+    db: { schema: "docs" },
   });
 
   return cachedSupabaseClient;
@@ -115,13 +114,19 @@ export const findRelevantContent = async (
   const queryEmbedding = await generateEmbedding(userQuery);
 
   const { data, error } = await supabase.rpc<MatchDocumentChunk[]>(
-    "match_document_chunks",
+    // "match_document_chunks",
+    "match_page_sections",
     {
-      query_embedding: queryEmbedding,
-      match_count: 4,
-      similarity_threshold: 0.5,
+      embedding: queryEmbedding,
+      match_threshold: 0.5,
+      match_count: 10,
+      min_content_length: 50,
+      // match_count: 4,
+      // similarity_threshold: 0.5,
     },
   );
+
+  // console.log({ data, error });
 
   if (error) {
     throw new Error(`Failed to retrieve relevant content: ${error.message}`);
