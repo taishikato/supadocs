@@ -16,7 +16,8 @@ export type RelevantContent = {
   updatedAt: string;
 };
 
-let cachedSupabaseClient: SupabaseClient | null = null;
+let cachedSupabaseClient: SupabaseClient<any, any, "docs", any, any> | null =
+  null;
 
 const getSupabaseClient = () => {
   if (cachedSupabaseClient) return cachedSupabaseClient;
@@ -35,7 +36,6 @@ const getSupabaseClient = () => {
     );
   }
 
-  // @ts-ignore
   cachedSupabaseClient = createClient(url, serviceRoleKey, {
     db: { schema: "docs" },
   });
@@ -79,9 +79,7 @@ export const findRelevantContent = async (
   const supabase = getSupabaseClient();
   const queryEmbedding = await generateEmbedding(userQuery);
 
-  const { data: pageSections, error } = await supabase.rpc<
-    MatchDocumentChunk[]
-  >(
+  const { data: pageSections, error } = await supabase.rpc(
     "match_page_sections",
     {
       embedding: queryEmbedding,
