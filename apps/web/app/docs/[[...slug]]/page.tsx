@@ -6,14 +6,14 @@ import {
   AlertTriangleIcon,
   CheckIcon,
   Download,
-  VolumeOffIcon,
   UserRoundXIcon,
   ShareIcon,
   CopyIcon,
   TrashIcon,
 } from "lucide-react";
-import { Button } from "@workspace/ui/components/button";
 import { listDocSlugs, getDocBySlug } from "@/lib/docs";
+import { CopyDocButton } from "./copy-doc-button";
+import { Button } from "@workspace/ui/components/button";
 import { ButtonGroup } from "@workspace/ui/components/button-group";
 import {
   DropdownMenu,
@@ -62,15 +62,8 @@ export default async function DocPage(props: PageProps) {
             </p>
           )}
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Button variant="outline" size="sm" asChild>
-              <a href={downloadHref} download>
-                <Download className="size-4" aria-hidden="true" />
-                <span>Download Markdown</span>
-              </a>
-            </Button>
-
             <ButtonGroup>
-              <Button variant="outline">Follow</Button>
+              <CopyDocButton slug={doc.slug} />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="!pl-2">
@@ -80,8 +73,10 @@ export default async function DocPage(props: PageProps) {
                 <DropdownMenuContent align="end" className="[--radius:1rem]">
                   <DropdownMenuGroup>
                     <DropdownMenuItem>
-                      <VolumeOffIcon />
-                      Mute Conversation
+                      <Download className="size-4" aria-hidden="true" />
+                      <a href={downloadHref} download>
+                        <span>Download Markdown</span>
+                      </a>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <CheckIcon />
