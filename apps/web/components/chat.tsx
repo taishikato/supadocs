@@ -4,12 +4,17 @@ import { useChat } from "@ai-sdk/react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ChatSDKError } from "@/lib/errors";
-import { messageMetadataSchema, type ChatMessage } from "@/lib/types";
+import {
+  CustomUIDataTypes,
+  messageMetadataSchema,
+  type ChatMessage,
+} from "@/lib/types";
 import { generateUUID } from "@/lib/utils";
 import { useDataStream } from "./data-stream-provider";
 import { Messages } from "./messages";
 import { MultimodalInput } from "./multimodal-input";
 import { toast } from "./toast";
+import { DataUIPart } from "ai";
 
 export function Chat({
   id,
@@ -39,7 +44,8 @@ export function Chat({
       experimental_throttle: 100,
       messageMetadataSchema,
       generateId: generateUUID,
-      onData: (dataPart) => {
+      // @ts-ignore
+      onData: (dataPart: DataUIPart<CustomUIDataTypes>) => {
         setDataStream((ds) => (ds ? [...ds, dataPart] : []));
       },
       onError: (error) => {
