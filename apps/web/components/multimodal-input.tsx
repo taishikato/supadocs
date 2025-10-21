@@ -24,7 +24,6 @@ import { ArrowUpIcon, StopIcon } from "./icons";
 import { Button } from "@workspace/ui/components/button";
 
 function PureMultimodalInput({
-  chatId,
   input,
   setInput,
   status,
@@ -33,7 +32,6 @@ function PureMultimodalInput({
   sendMessage,
   className,
 }: {
-  chatId: string;
   input: string;
   setInput: Dispatch<SetStateAction<string>>;
   status: UseChatHelpers<ChatMessage>["status"];
@@ -88,7 +86,7 @@ function PureMultimodalInput({
     setInput(event.target.value);
   };
 
-  const [uploadQueue, setUploadQueue] = useState<string[]>([]);
+  const [uploadQueue] = useState<string[]>([]);
 
   const submitForm = useCallback(() => {
     sendMessage({
@@ -108,32 +106,10 @@ function PureMultimodalInput({
     if (width && width > 768) {
       textareaRef.current?.focus();
     }
-  }, [
-    input,
-    setInput,
-    sendMessage,
-    setLocalStorageInput,
-    width,
-    chatId,
-    resetHeight,
-  ]);
-
-  // const _modelResolver = useMemo(() => {
-  //   return myProvider.languageModel(selectedModelId);
-  // }, [selectedModelId]);
+  }, [input, setInput, sendMessage, setLocalStorageInput, width, resetHeight]);
 
   return (
     <div className={cn("relative flex w-full flex-col gap-4", className)}>
-      {/* {messages.length === 0 &&
-        attachments.length === 0 &&
-        uploadQueue.length === 0 && (
-          <SuggestedActions
-            chatId={chatId}
-            selectedVisibilityType={selectedVisibilityType}
-            sendMessage={sendMessage}
-          />
-        )} */}
-
       <PromptInput
         className="rounded-xl border border-border bg-background p-3 shadow-xs transition-all duration-200 focus-within:border-border hover:border-muted-foreground/50"
         onSubmit={(event) => {
