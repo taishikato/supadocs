@@ -14,15 +14,13 @@ import { MessageActions } from "./message-actions";
 const PurePreviewMessage = ({
   message,
   isLoading,
-  isReadonly,
   requiresScrollPadding,
 }: {
   message: ChatMessage;
   isLoading: boolean;
-  isReadonly: boolean;
   requiresScrollPadding: boolean;
 }) => {
-  const [mode, setMode] = useState<"view" | "edit">("view");
+  const [mode] = useState<"view" | "edit">("view");
 
   useDataStream();
 

@@ -1,7 +1,6 @@
 "use client";
 
 import type { UseChatHelpers } from "@ai-sdk/react";
-import equal from "fast-deep-equal";
 import {
   type Dispatch,
   memo,
@@ -13,12 +12,8 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { useLocalStorage, useWindowSize } from "usehooks-ts";
-// import { saveChatModelAsCookie } from "@/app/(chat)/actions";
-// import { chatModels } from "@/lib/ai/models";
-// import { myProvider } from "@/lib/ai/providers";
 import type { ChatMessage } from "@/lib/types";
 import { cn } from "@/lib/utils";
-// import { Context } from "./elements/context";
 import {
   PromptInput,
   PromptInputSubmit,
@@ -156,8 +151,6 @@ function PureMultimodalInput({
             className="grow resize-none border-0! border-none! bg-transparent p-2 text-sm outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
             data-testid="multimodal-input"
             disableAutoResize={true}
-            maxHeight={200}
-            minHeight={44}
             onChange={handleInput}
             placeholder="Send a message..."
             ref={textareaRef}
