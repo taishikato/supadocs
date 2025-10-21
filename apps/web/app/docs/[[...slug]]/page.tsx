@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import {
-  ChevronDownIcon,
-  Download,
-  CopyIcon,
-  TrashIcon,
-  ExternalLink,
-  Sparkles,
-} from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
 import { listDocSlugs, getDocBySlug } from "@/lib/docs";
 import { CopyDocButton } from "./copy-doc-button";
 import { Button } from "@workspace/ui/components/button";
@@ -18,9 +11,9 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
+import { ClaudeAIIcon, MarkdownIcon, OpenAIIcon } from "@/components/icons";
 
 type PageProps = {
   params: Promise<{ slug: string[] }>;
@@ -97,7 +90,7 @@ export default async function DocPage(props: PageProps) {
                 <DropdownMenuContent align="end" className="[--radius:1rem]">
                   <DropdownMenuGroup>
                     <DropdownMenuItem>
-                      <Download className="size-4" aria-hidden="true" />
+                      <MarkdownIcon className="size-4" aria-hidden="true" />
                       <a href={downloadHref} download>
                         <span>Download Markdown</span>
                       </a>
@@ -108,7 +101,7 @@ export default async function DocPage(props: PageProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <ExternalLink className="size-4" aria-hidden="true" />
+                        <OpenAIIcon className="size-4" aria-hidden="true" />
                         <span>Open in ChatGPT</span>
                       </a>
                     </DropdownMenuItem>
@@ -118,20 +111,9 @@ export default async function DocPage(props: PageProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <Sparkles className="size-4" aria-hidden="true" />
+                        <ClaudeAIIcon className="size-4" aria-hidden="true" />
                         <span>Open in Claude</span>
                       </a>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <CopyIcon />
-                      Copy Conversation
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem variant="destructive">
-                      <TrashIcon />
-                      Delete Conversation
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
