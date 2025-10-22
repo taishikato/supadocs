@@ -28,7 +28,7 @@ const getSupabaseClient = () => {
 
   if (!serviceRoleKey) {
     throw new Error(
-      "SUPABASE_SERVICE_ROLE_KEY must be set to query embeddings",
+      "SUPABASE_SERVICE_ROLE_KEY must be set to query embeddings"
     );
   }
 
@@ -47,7 +47,7 @@ const generateChunks = (input: string): string[] => {
 };
 
 export const generateEmbeddings = async (
-  value: string,
+  value: string
 ): Promise<Array<{ embedding: number[]; content: string }>> => {
   const chunks = generateChunks(value);
   const { embeddings } = await embedMany({
@@ -70,7 +70,7 @@ export const generateEmbedding = async (value: string): Promise<number[]> => {
 };
 
 export const findRelevantContent = async (
-  userQuery: string,
+  userQuery: string
 ): Promise<RelevantContent[]> => {
   const supabase = getSupabaseClient();
   const queryEmbedding = await generateEmbedding(userQuery);
@@ -82,10 +82,8 @@ export const findRelevantContent = async (
       match_threshold: 0.6,
       match_count: 10,
       min_content_length: 50,
-    },
+    }
   );
-
-  console.log({ pageSections, error });
 
   if (error) {
     throw new Error(`Failed to retrieve relevant content: ${error.message}`);
