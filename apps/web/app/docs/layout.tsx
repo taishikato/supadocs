@@ -22,7 +22,6 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
       </SidebarInset>
       <div className="fixed bottom-6 flex justify-center w-full">
         <ChatModal
-          initialChatModel="gpt-4o-mini-2024-07-18"
           trigger={
             <Button
               size="lg"

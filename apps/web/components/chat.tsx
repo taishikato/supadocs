@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatSDKError } from "@/lib/errors";
 import {
   CustomUIDataTypes,
@@ -19,23 +19,15 @@ import { DataUIPart } from "ai";
 export function Chat({
   id,
   initialMessages,
-  initialChatModel,
   isReadonly,
 }: {
   id: string;
   initialMessages: ChatMessage[];
-  initialChatModel: string;
   isReadonly: boolean;
 }) {
   const { setDataStream } = useDataStream();
 
   const [input, setInput] = useState<string>("");
-  const [currentModelId] = useState(initialChatModel);
-  const currentModelIdRef = useRef(currentModelId);
-
-  useEffect(() => {
-    currentModelIdRef.current = currentModelId;
-  }, [currentModelId]);
 
   const { messages, setMessages, sendMessage, status, stop } =
     useChat<ChatMessage>({

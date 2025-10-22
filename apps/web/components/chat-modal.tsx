@@ -16,11 +16,10 @@ import {
 } from "@workspace/ui/components/dialog";
 
 type ChatModalProps = {
-  initialChatModel: string;
   trigger?: ReactNode;
 };
 
-export function ChatModal({ initialChatModel, trigger }: ChatModalProps) {
+export function ChatModal({ trigger }: ChatModalProps) {
   const [open, setOpen] = useState(false);
   const [chatId, setChatId] = useState(() => generateUUID());
 
@@ -43,7 +42,6 @@ export function ChatModal({ initialChatModel, trigger }: ChatModalProps) {
         <DataStreamProvider key={chatId}>
           <Chat
             id={chatId}
-            initialChatModel={initialChatModel}
             initialMessages={[]}
             isReadonly={false}
             key={chatId}
