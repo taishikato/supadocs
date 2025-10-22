@@ -42,6 +42,7 @@ llm/                   # Product docs, PRD, and planning notes
    Required values:
    - `OPENAI_API_KEY`
    - `SUPABASE_URL`
+   - `NEXT_PUBLIC_SITE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
 3. Start Supabase locally:
    ```bash
