@@ -1,88 +1,44 @@
 # Supadocs
 
-Supadocs is an AI-enabled documentation template built with Next.js, Supabase, and pnpm/TurboRepo. It combines docs-as-code authoring with a semantic search and chat experience so projects ship with Retrieval-Augmented Generation (RAG) on day one.
+Supadocs is your AI-friendly docs starter built with Next.js, Supabase, and OpenAI.
 
-## Features
-- Docs-as-code authoring with Markdown/MDX rendered by `apps/web`
-- Supabase pgvector storage and a `reindex` Edge Function for incremental embeddings
-- Streaming chat UI backed by Vercel AI SDK and OpenAI-compatible models
-- Monorepo sharing via `packages/*` for UI components, core utilities, and future agent runtimes
-- GitHub Action that calls the Edge Function after every push or PR merge
+Out of the box you get:
+- a built-in RAG-powered search and chat experience
+- handy extras like `copy article as Markdown` and `download Markdown file`
 
-## Repository Layout
-```
-apps/
-  web/                 # Next.js App Router UI and API routes
-packages/
-  core/                # Shared chunking/embedding helpers
-  ui/                  # shadcn/ui based component library
-  eslint-config/       # ESLint preset consumed across the repo
-  typescript-config/   # Base tsconfig used by apps and packages
-supabase/
-  functions/reindex/   # Edge Function issuing embeddings + upserts
-  migrations/          # pgvector table definition and helpers
-llm/                   # Product docs, PRD, and planning notes
-```
+## Tech stack
+- Supabase + pgvector to store your chunks and embeddings
+- OpenAI for embeddings and completions
+- GitHub Actions to keep markdown changes flowing into Supabase
 
-## Requirements
-- Node.js 20+
-- pnpm 10+
-- Supabase CLI
-- Docker (for running Supabase locally)
+## Usage
+Spinning up RAG chat takes just 2 steps:
+1. Prepare your database
+2. Ingest your docs
 
-## Getting Started
-1. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-2. Copy the environment template and fill in credentials:
-   ```bash
-   cp .env.example .env.local
-   ```
-   Required values:
-   - `OPENAI_API_KEY`
-   - `SUPABASE_URL`
-   - `NEXT_PUBLIC_SITE_URL`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-3. Start Supabase locally:
-   ```bash
-   supabase start
-   ```
-4. Apply migrations:
-   ```bash
-   supabase migration up
-   ```
-5. Run the development servers via Turbo:
-   ```bash
-   pnpm dev
-   ```
+### Prepare your database
+1. Clone the repo: `git clone git@github.com:taishikato/supadocs.git`
+2. Link it to your Supabase project: `supabase link --project-ref <your-ref>`
+3. Push the migrations: `supabase db push`
+4. Expose on the `docs` schema via Supabase Dashboard settings > API Settings > Exposed schemas
 
-The main app runs at `http://localhost:3000` and renders Markdown/MDX content from `apps/web/content/docs`. Updating files in this folder automatically refreshes the UI.
+### Ingest your docs
+Time to drop your documentation into the database as embeddings. GitHub Actions will handle it on every PR.
 
-## Supabase Edge Function
-The `reindex` Edge Function consumes GitHub webhook payloads and manages pgvector embeddings. To deploy:
+We already wired the workflow for you: [.github/workflows/generate_embeddings.yml](https://github.com/taishikato/supadocs/blob/main/.github/workflows/generate_embeddings.yml).
 
+Just make sure you set your `SUPABASE_SERVICE_ROLE_KEY` and `OPENAI_API_KEY` as repository secrets in your repo settings (settings > secrets > actions).
+
+### One more thing
+
+Install the dependencies:
 ```bash
-cd supabase
-supabase functions deploy reindex
-supabase secrets set \
-  OPENAI_API_KEY=sk-... \
-  SUPABASE_URL=https://your-project.supabase.co \
-  SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+pnpm install
 ```
 
-Configure GitHub Actions (`.github/workflows/reindex.yml`) with the same `OPENAI_API_KEY`, `SUPABASE_URL`, and `SUPABASE_SERVICE_ROLE_KEY` so the CI workflow can invoke the function.
+Start the app:
+```bash
+pnpm dev
+```
 
-## Development Scripts
-- `pnpm dev` – Run the Next.js app and watch mode builds
-- `pnpm build` – `turbo build` across packages/apps
-- `pnpm lint` – Lint all workspaces with the shared config
-- `pnpm format` – Apply Prettier across TypeScript/MDX/Markdown files
-
-## Agents Roadmap
-Agent runtimes, shared types, and task orchestration will live under upcoming packages:
-- `packages/agents-core` for runtime primitives (`registerAgent`, task queue, telemetry)
-- `packages/agents-tools` for reusable provider wrappers (LLMs, embeddings, search)
-- `scripts/` for Supabase schema syncing and operational tooling
-
-Refer to `llm/prd.md` and `AGENTS.md` for the latest product direction and implementation plans.
+The app runs at `http://localhost:3000`.
