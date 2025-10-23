@@ -16,7 +16,7 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          <div className="relative flex h-full flex-col px-4 pt-4 sm:px-6 lg:px-8">
+          <div className="relative flex h-full flex-col px-4 pt-4 pb-6 sm:px-6 lg:px-8">
             <SidebarTrigger />
             {children}
           </div>
