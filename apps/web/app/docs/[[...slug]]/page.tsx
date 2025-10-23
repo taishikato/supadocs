@@ -148,8 +148,31 @@ export async function generateMetadata(
 
   if (!doc) return undefined;
 
+  const description =
+    doc.description ??
+    "Learn how to use Supadocs to launch AI-friendly technical documentation.";
+  const slugPathname =
+    doc.slug.length === 1 && doc.slug[0] === "index"
+      ? "/docs"
+      : `/docs/${doc.slug.join("/")}`;
+  const absoluteUrl = resolveDocUrl(doc.slug);
+
   return {
     title: doc.title,
-    description: doc.description,
+    description,
+    alternates: {
+      canonical: slugPathname,
+    },
+    openGraph: {
+      title: doc.title,
+      description,
+      url: absoluteUrl,
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: doc.title,
+      description,
+    },
   };
 }

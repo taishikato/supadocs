@@ -1,5 +1,25 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Header } from "./header";
+
+const pageDescription =
+  "Launch a technical documentation site with AI chat, Markdown utilities, and a ready-to-use Next.js stack.";
+
+export const metadata: Metadata = {
+  description: pageDescription,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    description: pageDescription,
+    url: "/",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    description: pageDescription,
+  },
+};
 
 export default function Page() {
   return (
