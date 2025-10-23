@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: taishikato/embeddings-generator@v0.0.6 # Update this to the latest version.
         with:
-          supabase-url: 'https://hrxvfvxxmgpglfemqddj.supabase.co' # Update this to your project URL.
+          supabase-url: 'https://your-project-ref.supabase.co' # Update this to your project URL.
           supabase-service-role-key: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           openai-key: ${{ secrets.OPENAI_API_KEY }}
           docs-root-path: 'apps/web/content/docs' # the path to the root of your md(x) files
