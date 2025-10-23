@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { LogoClaudeAI, LogoOpenAI, MarkdownIcon } from "@/components/icons";
+import { mdxComponents } from "./mdx-components";
 
 type PageProps = {
   params: Promise<{ slug: string[] }>;
@@ -122,7 +123,7 @@ export default async function DocPage(props: PageProps) {
           </div>
         </header>
         <div className="prose prose-neutral dark:prose-invert">
-          <MDXRemote source={doc.content} />
+          <MDXRemote source={doc.content} components={mdxComponents} />
         </div>
       </article>
     </main>

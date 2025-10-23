@@ -1,154 +1,94 @@
-"use client";
-
-import { CheckIcon, CopyIcon } from "lucide-react";
-import type { ComponentProps, HTMLAttributes, ReactNode } from "react";
-import { createContext, useContext, useState } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import {
-  oneDark,
-  oneLight,
-} from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Button } from "@workspace/ui/components/button";
+import type { HTMLAttributes, ReactNode } from "react";
+import { highlightCode } from "@/lib/shiki";
 import { cn } from "@/lib/utils";
-
-type CodeBlockContextType = {
-  code: string;
-};
-
-const CodeBlockContext = createContext<CodeBlockContextType>({
-  code: "",
-});
+import { CodeBlockCopyButton } from "./code-block-copy-button";
 
 export type CodeBlockProps = HTMLAttributes<HTMLDivElement> & {
   code: string;
-  language: string;
-  showLineNumbers?: boolean;
+  language?: string | null;
+  showCopyButton?: boolean;
   children?: ReactNode;
 };
 
-export const CodeBlock = ({
+export async function CodeBlock({
   code,
   language,
-  showLineNumbers = false,
+  showCopyButton = true,
   className,
   children,
   ...props
-}: CodeBlockProps) => (
-  <CodeBlockContext.Provider value={{ code }}>
+}: CodeBlockProps) {
+  const copySource = normalizeLineEndings(code);
+  const highlightedSource = trimTrailingNewline(copySource);
+  const { lightHtml, darkHtml, lightBackground, darkBackground } =
+    await highlightCode(highlightedSource, {
+      language,
+    });
+
+  return (
     <div
       className={cn(
-        "relative w-full overflow-hidden rounded-md border bg-background text-foreground",
+        "not-prose relative w-full overflow-hidden rounded-lg border bg-background text-foreground",
         className
       )}
       {...props}
     >
       <div className="relative">
-        <SyntaxHighlighter
+        <ShikiMarkup
+          backgroundColor={lightBackground}
           className="overflow-hidden dark:hidden"
-          codeTagProps={{
-            className: "font-mono text-sm",
-          }}
-          customStyle={{
-            margin: 0,
-            padding: "1rem",
-            fontSize: "0.875rem",
-            background: "hsl(var(--background))",
-            color: "hsl(var(--foreground))",
-            overflowX: "auto",
-            overflowWrap: "break-word",
-            wordBreak: "break-all",
-          }}
-          language={language}
-          lineNumberStyle={{
-            color: "hsl(var(--muted-foreground))",
-            paddingRight: "1rem",
-            minWidth: "2.5rem",
-          }}
-          showLineNumbers={showLineNumbers}
-          style={oneLight}
-        >
-          {code}
-        </SyntaxHighlighter>
-        <SyntaxHighlighter
+          html={lightHtml}
+        />
+        <ShikiMarkup
+          backgroundColor={darkBackground}
           className="hidden overflow-hidden dark:block"
-          codeTagProps={{
-            className: "font-mono text-sm",
-          }}
-          customStyle={{
-            margin: 0,
-            padding: "1rem",
-            fontSize: "0.875rem",
-            background: "hsl(var(--background))",
-            color: "hsl(var(--foreground))",
-            overflowX: "auto",
-            overflowWrap: "break-word",
-            wordBreak: "break-all",
-          }}
-          language={language}
-          lineNumberStyle={{
-            color: "hsl(var(--muted-foreground))",
-            paddingRight: "1rem",
-            minWidth: "2.5rem",
-          }}
-          showLineNumbers={showLineNumbers}
-          style={oneDark}
-        >
-          {code}
-        </SyntaxHighlighter>
-        {children && (
+          html={darkHtml}
+        />
+        {(showCopyButton || children) && (
           <div className="absolute top-2 right-2 flex items-center gap-2">
+            {showCopyButton ? <CodeBlockCopyButton code={copySource} /> : null}
             {children}
           </div>
         )}
       </div>
     </div>
-  </CodeBlockContext.Provider>
-);
+  );
+}
 
-export type CodeBlockCopyButtonProps = ComponentProps<typeof Button> & {
-  onCopy?: () => void;
-  onError?: (error: Error) => void;
-  timeout?: number;
+type ShikiMarkupProps = {
+  html: string;
+  className?: string;
+  backgroundColor?: string;
 };
 
-export const CodeBlockCopyButton = ({
-  onCopy,
-  onError,
-  timeout = 2000,
-  children,
-  className,
-  ...props
-}: CodeBlockCopyButtonProps) => {
-  const [isCopied, setIsCopied] = useState(false);
-  const { code } = useContext(CodeBlockContext);
-
-  const copyToClipboard = async () => {
-    if (typeof window === "undefined" || !navigator.clipboard.writeText) {
-      onError?.(new Error("Clipboard API not available"));
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(code);
-      setIsCopied(true);
-      onCopy?.();
-      setTimeout(() => setIsCopied(false), timeout);
-    } catch (error) {
-      onError?.(error as Error);
-    }
-  };
-
-  const Icon = isCopied ? CheckIcon : CopyIcon;
+function ShikiMarkup({ html, className, backgroundColor }: ShikiMarkupProps) {
+  const style = backgroundColor
+    ? { backgroundColor, borderRadius: "inherit" as const }
+    : undefined;
 
   return (
-    <Button
-      className={cn("shrink-0", className)}
-      onClick={copyToClipboard}
-      size="icon"
-      variant="ghost"
-      {...props}
-    >
-      {children ?? <Icon size={14} />}
-    </Button>
+    <div
+      className={cn("overflow-x-auto px-5 py-4 text-sm", className)}
+      style={style}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
   );
-};
+}
+
+function normalizeLineEndings(input: string): string {
+  return input.replace(/\r\n/g, "\n");
+}
+
+function trimTrailingNewline(input: string): string {
+  if (!input.endsWith("\n")) {
+    return input;
+  }
+
+  let result = input;
+  while (result.endsWith("\n")) {
+    result = result.slice(0, -1);
+  }
+  return result;
+}
+
+export { CodeBlockCopyButton } from "./code-block-copy-button";
