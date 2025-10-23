@@ -37,7 +37,6 @@ function extractCode(
   >
 ): { value: string; language?: string | null } | null {
   if (!element.props) return null;
-
   const language = inferLanguage(element.props.className);
   const child = element.props.children;
 
@@ -59,6 +58,7 @@ function extractCode(
 
 function inferLanguage(className?: string): string | null {
   if (!className) return null;
+
   const match = className.match(/language-([\w-]+)/i);
   return match?.[1] ?? null;
 }
