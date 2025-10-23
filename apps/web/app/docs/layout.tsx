@@ -12,14 +12,16 @@ import {
 
 export default function DocsLayout({ children }: { children: ReactNode }) {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="relative flex h-full flex-col px-4 pt-4 sm:px-6 lg:px-8">
-          <SidebarTrigger />
-          {children}
-        </div>
-      </SidebarInset>
+    <>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <div className="relative flex h-full flex-col px-4 pt-4 sm:px-6 lg:px-8">
+            <SidebarTrigger />
+            {children}
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
       <div className="fixed bottom-6 flex justify-center w-full">
         <ChatModal
           trigger={
@@ -36,6 +38,6 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
           }
         />
       </div>
-    </SidebarProvider>
+    </>
   );
 }
