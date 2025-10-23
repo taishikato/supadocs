@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -30,12 +31,7 @@ export function Header() {
           </button>
         </div>
         <div className="hidden lg:flex">
-          <a
-            href="#"
-            className="text-sm/6 font-semibold text-gray-900 dark:text-white"
-          >
-            Log in <span aria-hidden="true">&rarr;</span>
-          </a>
+          <ModeToggle />
         </div>
       </nav>
       <Dialog
@@ -71,12 +67,7 @@ export function Header() {
           <div className="mt-6 flow-root">
             <div className="-my-6 divide-y divide-gray-500/10 dark:divide-white/10">
               <div className="py-6">
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                >
-                  Log in
-                </a>
+                <ModeToggle />
               </div>
             </div>
           </div>
