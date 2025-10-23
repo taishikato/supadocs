@@ -52,6 +52,13 @@ We already wired the workflow for you: [.github/workflows/generate_embeddings.ym
 Just make sure you set your `SUPABASE_SERVICE_ROLE_KEY` and `OPENAI_API_KEY` as repository secrets in your repo settings (settings > secrets > actions).
 
 ### One more thing
+Create `apps/web/.env.local` and set your env vars:
+```
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+SUPABASE_URL=<your-supabase-url>
+SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+OPENAI_API_KEY=<your-openai-key>
+```
 
 Install the dependencies:
 ```bash
