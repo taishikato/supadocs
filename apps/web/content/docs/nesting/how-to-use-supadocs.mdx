@@ -1,0 +1,94 @@
+---
+title: "How to Use Supadocs"
+description: "Step-by-step instructions to set up the Supadocs starter template, connect Supabase, and ingest your docs."
+---
+
+Follow this guide to get Supadocs running locally and wired to Supabase so your documentation is instantly searchable with AI.
+
+## Prerequisites
+
+- Node.js 20 or later
+- pnpm 10 or later
+- Supabase CLI
+- OpenAI API key
+
+## 1. Clone and install
+
+```bash
+git clone git@github.com:taishikato/supadocs-starter-template.git
+cd supadocs-starter-template
+pnpm install
+```
+
+## 2. Prepare Supabase
+
+1. Link the starter to your Supabase project:  
+   `supabase link --project-ref <your-ref>`
+2. Push the bundled schema and vector tables:  
+   `supabase db push`
+3. Expose the `docs` schema in the Supabase Dashboard under **Settings → API → Exposed schemas**.
+
+This creates the `document_chunks` table that stores markdown chunks and embeddings for semantic search.
+
+## 3. Configure environment variables
+
+Create `.env.local` (not committed) in the project root and set the essentials:
+
+```bash
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+SUPABASE_URL=<your-supabase-url>
+SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+OPENAI_API_KEY=<your-openai-key>
+```
+
+## 4. Run the app locally
+
+Start the dev server:
+
+```bash
+pnpm dev
+```
+
+Visit `http://localhost:3000` to browse your docs, try semantic search, and open the AI chat interface.
+
+## 5. Automate embeddings with GitHub Actions
+
+Supadocs ships with a ready-to-use workflow at `.github/workflows/generate_embeddings.yml`. To enable it:
+
+1. Create `.github/workflows/generate_embeddings.yml` and copy the following content.
+
+```yaml
+name: 'generate_embeddings'
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: taishikato/embeddings-generator@v0.0.6
+        with:
+          supabase-url: 'https://hrxvfvxxmgpglfemqddj.supabase.co'
+          supabase-service-role-key: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          openai-key: ${{ secrets.OPENAI_API_KEY }}
+          docs-root-path: 'apps/web/content/docs'
+          embedding-model: 'text-embedding-3-small'
+```
+
+2. Set the Supabase project URL and repository secrets.
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `OPENAI_API_KEY`
+3. Commit to `main` branch. The action chunks your markdown, generates embeddings (`text-embedding-3-small` by default), and upserts them into Supabase.
+
+Every push keeps your AI chat in sync with the latest docs.
+
+## Next steps
+
+- Customize the content in `apps/web/content/docs`.
+- Extend the UI via components in `packages/ui`.
+- Experiment with alternative embedding models.
+
+With Supadocs, your readers get conversational docs, while you keep the simplicity of writing in Markdown.

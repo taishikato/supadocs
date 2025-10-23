@@ -1,10 +1,32 @@
 ---
-title: "Supadocs Docs Introduction"
-description: "Meet the moving parts behind Supadocs and how the docs experience fits together."
+title: "What is Supadocs?"
+description: "Overview of the open-source, AI-ready documentation template powered by Next.js and Supabase."
 ---
 
-Supadocs is here to keep documentation updates fast, auditable, and a little less stressful for everyone involved.
+Supadocs is an open-source documentation starter that bakes Retrieval-Augmented Generation (RAG) into your docs from day one. Built with Next.js, Supabase, and modern UI primitives, it helps teams publish conversational, searchable documentation that stays in sync with their markdown.
 
-- Track every change with auditing that follows collection, drafting, and review runs.
-- Keep knowledge bases fresh by syncing Markdown and MDX in near real time.
-- Collaborate confidently with Supabase-backed storage and permission controls.
+## Why Supadocs exists
+
+- **AI out of the box**: Supabase pgvector stores embeddings so readers can ask questions via the built-in chat UI.
+- **Docs-as-code first**: Author content in Markdown or MDX, keep everything in Git, and ship to production without breaking your existing workflows.
+- **Self-hostable simplicity**: Deploy to Vercel or your own infrastructure, control your Supabase project, and own your data.
+
+## Core capabilities
+
+- **RAG-powered chat** that references your docs, streams answers.
+- **Semantic search** backed by OpenAI embeddings stored in Supabase for fast, relevant results.
+- **GitHub Actions ingestion** that chunks markdown updates and pushes embeddings automatically.
+- **Download and share tools** such as “copy article as Markdown” and direct markdown exports for offline use.
+
+## Ideal teams
+
+Supadocs serves open-source maintainers, startups building internal knowledge bases, and technical writers who need a dependable, extensible documentation system. If you want Mintlify- or GitBook-style intelligence without SaaS lock-in, Supadocs is your foundation.
+
+## How the pieces fit together
+
+1. **Author markdown** inside `apps/web/content/docs`.
+2. **Push to GitHub** to trigger the `generate_embeddings` workflow.
+3. **GitHub Actions workflow** runs `taishikato/embeddings-generator`, chunks the changed files, generates embeddings, and writes directly to Supabase pgvector tables.
+4. **Next.js frontend** renders your docs, and exposes RAG chat via the Vercel AI SDK.
+
+By combining familiar developer workflows with AI-native tooling, Supadocs lets you launch intelligent documentation with minimal setup while staying entirely within your own stack.

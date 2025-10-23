@@ -15,12 +15,8 @@ import {
 } from "@workspace/ui/components/sidebar";
 
 const docLinks = [
-  { title: "Docs Introduction", href: "/docs" },
-  { title: "Getting Started", href: "/docs/getting-started" },
-  {
-    title: "Deep Nesting Example",
-    href: "/docs/nesting/deep-nesting-example",
-  },
+  { title: "What is Supadocs?", href: "/docs" },
+  { title: "Getting Started", href: "/docs/nesting/how-to-use-supadocs" },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
