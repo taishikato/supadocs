@@ -79,7 +79,7 @@ export const findRelevantContent = async (
     "match_page_sections",
     {
       embedding: queryEmbedding,
-      match_threshold: 0.6,
+      match_threshold: 0.5,
       match_count: 10,
       min_content_length: 50,
     }
