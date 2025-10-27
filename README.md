@@ -17,7 +17,7 @@ Spinning up RAG chat takes just 2 steps:
 2. Ingest your docs
 
 ### Prepare your database
-1. Clone the repo: `git clone git@github.com:taishikato/supadocs-starter-template.git`
+1. Clone the repo: `git clone git@github.com:taishikato/supadocs.git`
 2. Link it to your Supabase project: `supabase link --project-ref <your-ref>`
 3. Push the migrations: `supabase db push`
 4. Expose on the `docs` schema via Supabase Dashboard settings > API Settings > Exposed schemas
