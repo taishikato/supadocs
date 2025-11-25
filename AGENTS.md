@@ -1,25 +1,53 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-`apps/web` runs the Next.js App Router UI; routes live in `app`, MDX docs in `content`, and shared UI in `components`. Workspace packages supply reuse: `packages/core` bundles Supabase utilities, `packages/ui` exports design system primitives, while `packages/eslint-config` and `packages/typescript-config` centralize linting/TS presets. Database assets reside in `supabase`, and Turbo plus pnpm workspace files at the root wire everything together.
+- Monorepo managed with pnpm + Turbo. Main app lives in `apps/web` (Next.js 15) with routes under `app/`, shared UI in `components/`, and docs/MDX content in `content/`.
+- Shared libraries sit in `packages`: `core` (Supabase + Zod utilities), `ui` (Radix/Tailwind-based components and styles), `eslint-config`, and `typescript-config`.
+- Database assets are in `supabase/` (migrations, config). Environment files for the web app live at `apps/web/.env.local`.
 
 ## Build, Test, and Development Commands
-- `pnpm install` — bootstrap workspace dependencies (Node 20+, pnpm 10).
-- `pnpm dev` — Turbo dev pipeline; serves `apps/web` on :3000 and watches packages.
-- `pnpm --filter web dev` — start only the web app with Turbopack HMR.
-- `pnpm lint` — ESLint across the monorepo; warnings fail by default.
-- `pnpm build` — `turbo build` for Next.js production output and package type checks.
-- `pnpm --filter web typecheck` — no-emit TypeScript check for the web app.
-- `pnpm format` — Prettier on `ts|tsx|md`; run before committing docs.
+- `pnpm install` — install workspace deps (Node >= 20).
+- `pnpm dev` — Turbo dev mode; starts app watchers (use `pnpm --filter web dev` for only the Next app).
+- `pnpm build` — Turbo build across packages; honors `.env` files.
+- `pnpm lint` — run ESLint for all packages; `pnpm --filter web typecheck` for TS-only validation.
+- `pnpm format` — Prettier on `*.ts/tsx/md`.
 
 ## Coding Style & Naming Conventions
-TypeScript is the default; keep strict typing and prefer named exports. Prettier handles layout (two-space indent, trailing commas) — never hand-format. React components use `PascalCase`, hooks start with `use`, and shared utilities stay in `packages/core/src` or `packages/ui/src/lib`. Avoid importing from `apps/web` into packages. Adjust lint rules in `packages/eslint-config` instead of adding inline disables.
+- TypeScript + React with module resolution driven by workspace TS configs. Prefer functional components and hooks; name hooks `useXYZ` and components in PascalCase.
+- Follow the shared ESLint config (`@workspace/eslint-config`); fail on warnings. Keep imports ordered/unused imports removed.
+- Two-space indentation, trailing commas where Prettier applies, and avoid broad `any`. Co-locate helpers in `lib/` and keep MDX content snake/kebab-case in `content/`.
 
 ## Testing Guidelines
-Automated tests are not scaffolded yet, so linting and typing guard regressions. When adding tests, colocate `*.test.ts(x)` or use `__tests__` folders to keep Turborepo caching effective. Define test scripts in the owning package and expose them via `turbo.json`, and include manual QA notes in PRs until CI testing is in place.
+- No committed automated tests yet; add coverage alongside features. Use `*.test.ts`/`*.test.tsx` near the code or in a `__tests__` folder for larger suites.
+- Prefer lightweight unit tests for shared packages and Playwright/React Testing Library for UI flows. Always run `pnpm lint` and `pnpm --filter web typecheck` before opening a PR.
 
 ## Commit & Pull Request Guidelines
-With no published history, adopt Conventional Commits (`feat:`, `fix:`) so scopes stay clear. Bundle related work together, and reference Supabase migration filenames when schemas change. PRs should link to an issue/goal, outline the change, list the local checks run, and attach screenshots or clips for UI updates. Request review once checks pass locally.
+- Commit style follows conventional commits (`fix:`, `chore:`, `add:`) with short, imperative summaries.
+- PRs should describe intent, list notable changes, and link issues. Call out schema migrations (`supabase/migrations`) or new env vars (`apps/web/.env.local`) explicitly; include screenshots/gifs for visible UI updates.
 
-## Environment & Configuration
-Create `.env.local` (not committed) for Next.js and shared packages; document new keys as they appear. Current essentials: `NEXT_PUBLIC_SITE_URL`, `SUPABASE_URL`, and `SUPABASE_SERVICE_ROLE_KEY`. Use the Supabase CLI with `supabase/config.toml` when running `supabase migration up`, and keep credentials in your team’s secret manager.
+## Security & Configuration Tips
+- Required keys: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, and `NEXT_PUBLIC_SITE_URL` in `apps/web/.env.local`; keep keys out of commits.
+- Use `supabase link --project-ref <ref>` and `supabase db push` to sync migrations before running the app locally.
+
+## Do
+- Write your responses to me in Japanese, but write comments in the source code in English.
+- Write a semantic commit messages:
+  - Example:
+    ```
+    feat: add hat wobble
+    ^--^  ^------------^
+    |     |
+    |     +-> Summary in present tense.
+    |
+    +-------> Type: chore, docs, feat, fix, refactor, style, or test.
+    ```
+  - More Examples:
+    - feat: (new feature for the user, not a new feature for build script)
+    - fix: (bug fix for the user, not a fix to a build script)
+    - docs: (changes to the documentation)
+    - style: (formatting, missing semi colons, etc; no production code change)
+    - refactor: (refactoring production code, eg. renaming a variable)
+    - test: (adding missing tests, refactoring tests; no production code change)
+    - chore: (updating grunt tasks etc; no production code change)
+- Use `type` instead of `interface` whenever possible.
+- When creating a new component file, name the file in kebab case, like `query-provider.tsx`.
