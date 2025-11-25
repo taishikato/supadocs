@@ -39,7 +39,7 @@ export default function Page() {
               >
                 README.md
               </Link>{" "}
-              for the setup guide - it's supa easy!
+              for the setup guide - it&apos;s supa easy!
             </li>
             <li>
               Open{" "}

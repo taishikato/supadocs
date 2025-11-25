@@ -13,7 +13,7 @@ export function PureMessageActions({
   message: ChatMessage;
   isLoading: boolean;
 }) {
-  const [_, copyToClipboard] = useCopyToClipboard();
+  const [, copyToClipboard] = useCopyToClipboard();
   const [isCopied, setIsCopied] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

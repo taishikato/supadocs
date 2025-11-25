@@ -36,7 +36,7 @@ export function Chat({
       experimental_throttle: 100,
       messageMetadataSchema,
       generateId: generateUUID,
-      // @ts-ignore
+      // @ts-expect-error DataUIPart is not fully typed for custom UI data yet
       onData: (dataPart: DataUIPart<CustomUIDataTypes>) => {
         setDataStream((ds) => (ds ? [...ds, dataPart] : []));
       },
