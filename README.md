@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: taishikato/embeddings-generator@v0.0.6 # Update this to the latest version.
+      - uses: supabase/embeddings-generator@v0.0.6 # Update this to the latest version.
         with:
           supabase-url: 'https://your-project-ref.supabase.co' # Update this to your project URL.
           supabase-service-role-key: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

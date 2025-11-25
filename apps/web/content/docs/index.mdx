@@ -26,7 +26,7 @@ Supadocs serves open-source maintainers, startups building internal knowledge ba
 
 1. **Author markdown** inside `apps/web/content/docs`.
 2. **Push to GitHub** to trigger the `generate_embeddings` workflow.
-3. **GitHub Actions workflow** runs `taishikato/embeddings-generator`, chunks the changed files, generates embeddings, and writes directly to Supabase pgvector tables.
+3. **GitHub Actions workflow** runs `supabase/embeddings-generator`, chunks the changed files, generates embeddings, and writes directly to Supabase pgvector tables.
 4. **Next.js frontend** renders your docs, and exposes RAG chat via the Vercel AI SDK.
 
 By combining familiar developer workflows with AI-native tooling, Supadocs lets you launch intelligent documentation with minimal setup while staying entirely within your own stack.
