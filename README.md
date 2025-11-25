@@ -47,8 +47,6 @@ jobs:
           embedding-model: 'text-embedding-3-small'
 ```
 
-We already wired the workflow for you: [.github/workflows/generate_embeddings.yml](https://github.com/taishikato/supadocs/blob/main/.github/workflows/generate_embeddings.yml).
-
 Just make sure you set your `SUPABASE_SERVICE_ROLE_KEY` and `OPENAI_API_KEY` as repository secrets in your repo settings (settings > secrets > actions).
 
 ### One more thing
